@@ -1,0 +1,11 @@
+.carousel {
+    overflow: hidden;
+  }
+  
+  .carousel-inner {
+    display: flex;
+  }
+  
+  .carousel-item {
+    flex: 0 0 25%; /* Set each carousel item to occupy 25% of the carousel width */
+  }

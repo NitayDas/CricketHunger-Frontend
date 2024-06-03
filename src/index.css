@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.body {
+    /* Set gradient color from top (#06b6d4) to bottom (#6ee7b7) */
+    background: linear-gradient(#06b6d4, #6ee7b7);
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif; /* Optional */
+    /* Additional styling if needed */
+    min-height: 100vh;
+  }

@@ -1,0 +1,6 @@
+.text-with-gradient {
+    /* Create a gradient text effect */
+    background: linear-gradient(#06b6d4, #6ee7b7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; /* Hide the original text color */
+  }
