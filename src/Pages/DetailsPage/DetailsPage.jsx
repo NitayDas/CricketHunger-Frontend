@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Slider from 'react-slick';
@@ -12,6 +12,22 @@ const DetailsPage = () => {
     const [scoreboard2, setScoreboard2] = useState([]);
     const [selectedOver, setSelectedOver] = useState(null);
     const [error, setError] = useState(null);
+    const [comment, setComment] = useState("");
+    const [comments, setComments] = useState([]);
+
+
+    const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`http://127.0.0.1:8000/matchDetails/${match_id}/add_comment/`, {
+                comment: comment,
+            });
+            setComments([...comments, response.data]); // Update the comments array
+            setComment(''); // Clear the input field
+        } catch (error) {
+            console.error("There was an error submitting the comment!", error);
+        }
+    };
 
     useEffect(() => {
         const fetchMatchData = async () => {
@@ -124,6 +140,31 @@ const DetailsPage = () => {
                     </div>
                 )}
             </div>
+
+
+            {/* Comment Section */}
+            <div className="mt-8 px-24">
+                <h2 className="text-xl font-bold">Comments</h2>
+                
+               
+                {comments.map((comment, index) => (
+                    <p key={index} className="p-4 text-lg">{comment.text}</p>
+                ))}
+
+               
+            <form onSubmit={handleCommentSubmit} className="mt-4">
+                    <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Enter your comment"
+                    className="w-1/2 p-2 border rounded"
+                    rows="2"
+                    required
+                /><br></br>
+                <button type="submit" className="mt-4 bg-blue-500 text-white p-2 rounded">Submit</button>
+            </form> 
+        </div>
+
         </div>
     );
 };
