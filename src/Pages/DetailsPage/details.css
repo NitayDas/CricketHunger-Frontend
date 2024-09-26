@@ -1,0 +1,35 @@
+
+/* Style for the previous arrow */
+.custom-prev-arrow,
+.custom-next-arrow {
+    color: black; /* Color of the arrows */
+    font-size: 30px; /* Adjust size */
+    line-height: 1;
+    cursor: pointer; /* Pointer on hover */
+}
+
+/* Change the hover effect if desired */
+.custom-prev-arrow:hover,
+.custom-next-arrow:hover {
+    color: darkgray; /* Change color on hover */
+}
+.bg-black {
+    background-color: rgb(213, 59, 59) !important; /* Set background color to black */
+}
+
+.h-20 {
+    height: 5rem;
+    width: 5rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.text-lg {
+    font-size: 1.125rem; /* Set large text */
+}
+
+.text-center {
+    text-align: center;
+}

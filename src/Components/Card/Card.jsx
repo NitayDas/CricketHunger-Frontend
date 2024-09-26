@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Card = ({card}) => {
@@ -25,3 +24,4 @@ const Card = ({card}) => {
 };
 
 export default Card;
+

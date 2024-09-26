@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import './navbar.css'
 
@@ -34,6 +33,7 @@ const Navbar = () => {
       <li><Link to="/matches">Matches</Link></li>
       <li><a>Contact</a></li>
       <li><a>About</a></li>
+      <li><Link to ="signin/">sign in</Link></li>
     </ul>
   </div>
 </div>

@@ -4,6 +4,20 @@ import { useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import './details.css'; 
+
+const fetchComments = async(overSummaryId)=>{
+    const response = await axios.get(`http://127.0.0.1:8000/comments/${overSummaryId}/`);
+    return response.data;
+};
+
+
+const postComment = async({ overSummaryId, commentData }) => {
+    const response = await axios.post(`http://127.0.0.1:8000/comments/${overSummaryId}/`, commentData);
+    return response.data;
+};
+
 
 const DetailsPage = () => {
     const { match_id } = useParams();
@@ -13,21 +27,14 @@ const DetailsPage = () => {
     const [selectedOver, setSelectedOver] = useState(null);
     const [error, setError] = useState(null);
     const [comment, setComment] = useState("");
-    const [comments, setComments] = useState([]);
+    const [username, setUsername] = useState(''); 
+    // const [comments, setComments] = useState([]); 
+    const queryClient = useQueryClient();
+    // const [socket, setSocket] = useState(null);
+    console.log(queryClient);
 
-
-    const handleCommentSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`http://127.0.0.1:8000/matchDetails/${match_id}/add_comment/`, {
-                comment: comment,
-            });
-            setComments([...comments, response.data]); // Update the comments array
-            setComment(''); // Clear the input field
-        } catch (error) {
-            console.error("There was an error submitting the comment!", error);
-        }
-    };
+    const overSummaryId = overSummary[selectedOver]?.[0]?.id;
+    
 
     useEffect(() => {
         const fetchMatchData = async () => {
@@ -60,9 +67,150 @@ const DetailsPage = () => {
         fetchMatchData();
     }, [match_id]);
 
+
+    
+    const { data: comments = [], isLoading, isError } = useQuery({
+        queryKey: ['comments',overSummaryId], 
+        queryFn: () => fetchComments(overSummaryId), 
+        enabled: overSummaryId !== null, // Only run if we have a valid ID
+        refetchOnWindowFocus: false,
+    });
+    
+    const mutation = useMutation({
+        mutationFn: ( commentData ) =>{
+                return postComment({ overSummaryId, commentData});
+            },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['comments']);
+        }
+    });
+
+
+    const handleCommentSubmit = async(event) => {
+        event.preventDefault();
+        if (comment.trim() === "") return; // Prevent empty submissions
+        const getusername = await findUser();
+        const finalUsername = getusername ? getusername : "Guest";
+        const commentData = { username : finalUsername, content: comment }; // Replace with actual user data
+        mutation.mutate(commentData); // Trigger the mutation
+        setComment("");
+    };
+
+    // find the user
+    const findUser = async () => {
+    try {
+        const response = await axios.get('http://127.0.0.1:8000/finduser/');
+        console.log(response.data.username);
+        setUsername(response.data.username); // Set the username state with the fetched username
+    }
+        catch (error) {
+        console.error("Error fetching user data:", error);
+    }
+    };
+
+
     if (error) {
         return <div>{error}</div>;
     }
+
+
+
+    // useEffect(() => {
+    //     const fetchComments = async () => {
+    //         if (selectedOver) {
+    //             try {
+    //                 const overSummaryId = overSummary[selectedOver][0].id; // Assuming you can get the ID from the first over in the group
+    //                 const response = await axios.get(`http://127.0.0.1:8000/comments/${overSummaryId}/`);
+    //                 setComments(response.data);
+    //             } catch (error) {
+    //                 console.error("Error fetching comments:", error);
+    //             }
+    //         }
+    //     };
+
+    //     fetchComments();
+    // }, [selectedOver, overSummary]);
+
+    // const handleCommentChange = (event) => {
+    //     setComment(event.target.value);
+    // };
+
+    // const handleCommentSubmit = async (event) => {
+    //     event.preventDefault();
+    //     if (!comment) return;
+
+    //     try {
+    //         const overSummaryId = overSummary[selectedOver][0].id; // Get the OverSummary ID
+    //         console.log(overSummaryId);
+    //         await axios.post(`http://127.0.0.1:8000/comments/${overSummaryId}/`, {
+    //             username: "YourUsername", // Replace with actual username or implement a user login system
+    //             content: comment,
+    //         });
+    //         setComment(""); // Clear the input
+    //         // Fetch the updated comments
+    //         const response = await axios.get(`http://127.0.0.1:8000/comments/${overSummaryId}/`);
+    //         setComments(response.data);
+    //     } catch (error) {
+    //         console.error("Error posting comment:", error);
+    //     }
+    // };
+
+    
+    // useEffect(() => {
+    //     if (selectedOver !== null && overSummary[selectedOver]) {
+    //         const overSummaryId = overSummary[selectedOver][0].id;
+    
+    //         // Establish WebSocket connection
+    //         const ws = new WebSocket(`ws://127.0.0.1:8000/ws/comments/${overSummaryId}/`);  // Adjust port if needed
+
+           
+    //         ws.onopen = () => {
+    //             console.log('WebSocket connected');
+    //         };
+    
+    //         ws.onmessage = (event) => {
+    //             const data = JSON.parse(event.data);
+    //             const { comment } = data;
+    
+    //             // Add the new comment to the state
+    //             setComments(prevComments => [...prevComments, comment]);
+    //         };
+    
+    //         ws.onclose = () => {
+    //             console.log('WebSocket disconnected');
+    //         };
+    
+    //         setSocket(ws);
+    
+    //         return () => {
+    //             ws.close();
+    //         };
+    //     }
+    // }, [selectedOver, overSummary]);
+    
+
+
+    // const handleCommentSubmit = (e) => {
+    //     e.preventDefault();
+    //     if (socket && comment.trim() !== '' && selectedOver !== null && overSummary[selectedOver]) {
+    //         const overSummaryId = overSummary[selectedOver][0].id; // Get the OverSummary ID
+    
+    //         socket.send(JSON.stringify({
+    //             username: 'YourUsername',  // Replace with actual user data
+    //             content: comment,
+    //             overSummaryId: overSummaryId // Send the OverSummary ID
+    //         }));
+    //         console.log("sending data to ws");
+    
+    //         setComment(''); // Clear the input
+    //     }
+    // };
+    
+    
+
+
+
+
 
     const latestOverNum = Math.max(...Object.keys(overSummary).map(Number));
 
@@ -86,7 +234,7 @@ const DetailsPage = () => {
             setSelectedOver(overNums[selectedIdx]);
         }
     };
-
+    
     const handleOverClick = (overNum) => {
         setSelectedOver(overNum);
     };
@@ -122,49 +270,96 @@ const DetailsPage = () => {
                     </div>
                 </div>
             </div>
+
+
             <div className='mt-24 px-12'>
                 <Slider {...settings}>
                     {Object.keys(overSummary).map((overNum, index) => (
                         <div key={index} onClick={() => handleOverClick(overNum)}>
-                            <h3 className={`rounded-full  ${ selectedOver == overNum ? 'bg-slate-800  py-3'  : 'bg-slate-600 py-2'} text-white text-lg text-center mx-8 border border-gray-500`} onClick={() => handleNumClick(overNum)}>
-                                over: {overNum}
+                            <h3 className={`rounded-full  ${ selectedOver == overNum ? 'bg-slate-800  py-3 text-xl'  : 'bg-slate-600 py-2 text-lg'} text-white text-center mx-8 border border-gray-500`} onClick={() => handleNumClick(overNum)}>
+                                 {overNum}
                             </h3>
                         </div>
                     ))}
                 </Slider>
+
+             
+              
+                
                 {selectedOver && overSummary[selectedOver] && (
-                    <div className='mt-12'>
+                    <div className='mt-12 p-4 rounded-lg shadow-sm'>
                         {overSummary[selectedOver].map((over, index) => (
                             <p key={index} className='text-lg font-semibold p-4 ml-8'>{over.commentary}</p>
                         ))}
+
+                    {/* start comment system */}
+                     <div className='flex mt-12 p-4 bg-white rounded-lg shadow-md'>
+                         {/* comment publish */}
+                        <div className='w-1/2 p-4'>
+                            {isLoading && <p>Loading comments...</p>}
+                            {isError && <p>Error loading comments!</p>}
+                            {comments && comments.map((comment, index) => (
+                                <div key={index} className='border-b border-gray-300 py-2'>
+
+                                    
+                                        <h4 className='text-xs font-bold'>{comment.username} <span className="ml-2 text-xs text-gray-600">{new Date(comment.created_at).toLocaleString()}</span></h4>
+                                        <p className='text-lg font-medium py-2  border-gray-200'>{comment.content}</p>
+                                      
+                                        
+                                        {/* Like button */}
+                                        <div className='flex items-center space-x-4 mt-1'>
+                                            <button 
+                                                className='items-center text-slate-500 text-sm hover:text-slate-700' 
+                                                onClick={() => handleLike(comment.id)}
+                                              >
+                                                <i className="fa fa-thumbs-up mr-1"></i> 
+                                                 {comment.likes}
+                                            </button>
+
+                                            {/* Dislike button */}
+                                            <button 
+                                                className=' items-center text-slate-500 text-sm hover:text-slate-700' 
+                                                onClick={() => handleDislike(comment.id)}
+                                            >
+                                                <i className="fa fa-thumbs-down mr-1"></i> 
+                                                {comment.dislikes}
+                                            </button>
+                                       
+                                           {/* Reply button */}
+                                            <button 
+                                                className='text-blue-500 text-xs font-semibold hover:text-blue-800' 
+                                                onClick={() => handleReply(comment.id)}
+                                            >
+                                                Reply
+                                            </button>
+                                         </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* comment box */}
+                        <div className='w-1/2 p-4'>
+                            <form onSubmit={handleCommentSubmit}>
+                                <textarea
+                                    className='w-full h-32 p-4 border-2 border-gray-300 rounded-lg'
+                                    rows="2"
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    placeholder="Write your comment here..."
+                                />
+                                <button type="submit" className='mt-4 px-4 py-2 bg-sky-600 text-white rounded-lg'>
+                                    Submit Comment
+                                </button>
+                            </form>
+                        </div>
+                       </div>
+                       {/* end comment system */}
+
                     </div>
                 )}
+                {/* end of commentary and user comment */}
+
             </div>
-
-
-            {/* Comment Section */}
-            <div className="mt-8 px-24">
-                <h2 className="text-xl font-bold">Comments</h2>
-                
-               
-                {comments.map((comment, index) => (
-                    <p key={index} className="p-4 text-lg">{comment.text}</p>
-                ))}
-
-               
-            <form onSubmit={handleCommentSubmit} className="mt-4">
-                    <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Enter your comment"
-                    className="w-1/2 p-2 border rounded"
-                    rows="2"
-                    required
-                /><br></br>
-                <button type="submit" className="mt-4 bg-blue-500 text-white p-2 rounded">Submit</button>
-            </form> 
-        </div>
-
         </div>
     );
 };
