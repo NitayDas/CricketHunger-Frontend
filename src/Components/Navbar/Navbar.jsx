@@ -1,10 +1,33 @@
 import { Link } from 'react-router-dom';
 import './navbar.css'
+import { useContext } from 'react';
+import  { AuthContext } from '../../Provider/AuthProvider';
 
 const Navbar = () => {
+
+  const { user, logOut } = useContext(AuthContext);
+  console.log(user);
+  
+
+  const handleLogOut = () => {
+    logOut()
+        .then(() => { })
+        .catch(error => console.log(error));
+}
+
+const navOptions = <>
+<li><Link to="/">Home</Link></li>
+<li><Link to="/matches">Matches</Link></li>
+<li><Link to="/contact">Contact</Link></li>
+<li><Link to="/about">About</Link></li>
+
+
+</>
+
+
     return (
         <div className='rounded-xl'>
-     < div className="navbar bg-base-100 rounded-2xl">
+     < div className="navbar bg-base-100 px-10 rounded-2xl">
   <div className="navbar-start">
     <div className="dropdown">
       <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -24,17 +47,26 @@ const Navbar = () => {
     </div>
     <a className="text-3xl font-bold text-with-gradient">Crickie Hunger</a>
   </div>
-  <div className="navbar-center hidden  lg:flex">
-   
+  <div className="navbar-center hidden   lg:flex  ">
+  <ul className='menu font-semibold text-lg menu-horizontal px-1'>
+
+  </ul>
   </div>
   <div className="navbar-end">
-  <ul className="menu font-semibold menu-horizontal px-1">
-      <li><Link to="">Home</Link></li>
-      <li><Link to="/matches">Matches</Link></li>
-      <li><a>Contact</a></li>
-      <li><a>About</a></li>
-      <li><Link to ="signin/">sign in</Link></li>
+  <ul className="menu font-semibold text-lg menu-horizontal px-1">
+  {navOptions}
+   
     </ul>
+   <ul>
+   {
+    user ? <>
+        {/* <span>{user?.displayName}</span> */}
+        <button onClick={handleLogOut} className="h-10 btn gard-bg ">Sign Out</button>
+    </> : <>
+        <li><Link to="/signin"><button className='h-10 btn  gard-bg'>Sign In</button></Link></li>
+    </>
+}
+   </ul>
   </div>
 </div>
         </div>

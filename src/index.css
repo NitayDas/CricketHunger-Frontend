@@ -11,3 +11,7 @@
     /* Additional styling if needed */
     min-height: 100vh;
   }
+
+ .grad-button{
+  background: linear-gradient(#06b6d4, #6ee7b7);
+ }

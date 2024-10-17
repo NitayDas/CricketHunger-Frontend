@@ -1,43 +1,77 @@
-import axios from 'axios';
-import { useState } from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import { useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Provider/AuthProvider";
+import { BsGoogle } from 'react-icons/bs';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const SignIn = () => {
-    const [formData, setFormData] = useState({ username: '', password: '' });
-    // const { username, password } = formData;
 
-    const [message, setMessage] = useState('');
 
-    const navigate = useNavigate();
+const Login = () => {
 
-    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+   
+    const location = useLocation()
+    console.log('location in login page', location)
+    const navigate = useNavigate()
+    const { signIn, loading } = useContext(AuthContext)
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        try {
-          const response = await axios.post('http://localhost:8000/login/', formData);
-          setMessage(response.data.message); // Update message on success
-          navigate('/')
-        } catch (error) {
-          setMessage(error.response?.data?.error || 'Login failed'); // Update message on error
-        }
-      };
-    
-      
 
+    const handleLogin = async (e) => {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const email = form.get('email');
+      const password = form.get('password');
+  
+      try {
+          await signIn(email, password);
+          navigate(location?.state ? location.state : '/');
+      } catch (error) {
+          console.error("Login Error:", error.message);
+          toast.error(error.message);
+      }
+  };
     return (
-        <div className='mt-24 container-fluid  w-7/12 mx-auto bg-sky-300 p-8 shadow-lg rounded-md'>
-            <h2 className='text-xl font-medium mb-4 ml-4'>Login</h2>
-            <form onSubmit={onSubmit}>
-                <input className="form-control w-7/12 block border rounded-lg px-4 py-2 mb-4" name="username" value={formData.username} onChange={onChange} placeholder="Username" /><br></br>
-                <input className="form-control w-7/12 block border rounded-lg px-4 py-2 mb-4" name="password" value={formData.password} onChange={onChange} type="password" placeholder="Password" /><br></br>
-                <button className='bg-indigo-600 btn btn-primary hover:bg-indigo-500 rounded-lg px-4 py-2 text-white font-medium mb-4' type="submit">sign in</button>
-            </form>
 
-            <Link to ="/signup"><button className="text-black hover:text-indigo-700 font-medium" >Do not have an account?</button></Link>
-            {message && <p className="mt-4 text-green-500">{message}</p>} 
+        <div className="  shadow-drop">
+            <div className="container   mx-auto"  >
+                <h2 className="text-2xl font-bold text-black py-12 text-center   lg:text-4xl pt-2">Login Here !</h2>
+                <div className="flex ">
+                    <form onSubmit={handleLogin} className="py-5 flex-1" >
+                        <div className="form-control drop-shadow px-12">
+                            <label className="label">
+                                <span className="label-text text-black ">Email</span>
+                            </label>
+                            <input type="text" name='email' placeholder="email" className="input rounded-none border-none border-transparent  bg-violet-200 drop-shadow text-black focus:outline-indigo-950 focus:bg-white" />
+                        </div>
+
+                      
+
+                        <div className="form-control drop-shadow  px-12 ">
+                            <label className="label">
+                                <span className="label-text  text-black">Password</span>
+                            </label>
+                            <input type="password" name='password' placeholder="password" className="input rounded-none border-none border-transparent  bg-violet-200 drop-shadow text-black focus:outline-indigo-950 focus:bg-white" />
+
+                            <p className="text-black py-3">New to the website? <span className="text-indigo-950"><Link to="/register">Sign Up</Link></span> here.</p>
+                        </div>
+                        
+                        
+                        <div className="form-control mt-2">
+                            <input className="btn bg-indigo-950 mx-12 text-white drop-shadow hover:bg-white hover:text-cyan-600" type="submit" value="Login" />
+                        </div>
+                        
+                    </form>
+
+                    <div className="flex-1 h-full">
+                        <img className="h-[430px]" src="https://i.postimg.cc/jSHMzwjw/1000-F-282091909-OKTHM5-TJG5-Fa-KYRklh8-IFL9073x-NSt-Bg-1-c0-ESK6-Vd-C-transformed.jpg" alt="" />
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+
     );
 };
 
-export default SignIn;
+export default Login;
