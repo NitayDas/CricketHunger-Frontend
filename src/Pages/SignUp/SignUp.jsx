@@ -103,12 +103,12 @@ const SignUp = () => {
               </div>
               <div className="form-control mt-6">
               <div className="form-control mt-6">
-    <button className="grad-button btn text-xl text-white">Register</button>
+    <button className="grad-button btn text-xl text-white">Sign Up</button>
 </div>
               </div>
             </form>
             <div>
-              <p className="p-8 pt-0 text-xl font-medium">Already have an account? <NavLink to="/login" className="text-2xl font-semibold bg-grad-button">Login</NavLink> here.</p>
+              <p className="p-8 pt-0 text-xl font-medium">Already have an account? <NavLink to="/signin" className="text-2xl font-semibold bg-grad-button">Login</NavLink> here.</p>
             </div>
           </div>
         </div>

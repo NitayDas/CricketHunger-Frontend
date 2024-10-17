@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Provider/AuthProvider";
 import { BsGoogle } from 'react-icons/bs';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
-const Login = () => {
+const SignIn = () => {
 
    
     const location = useLocation()
@@ -32,46 +32,49 @@ const Login = () => {
   };
     return (
 
-        <div className="  shadow-drop">
-            <div className="container   mx-auto"  >
-                <h2 className="text-2xl font-bold text-black py-12 text-center   lg:text-4xl pt-2">Login Here !</h2>
-                <div className="flex ">
-                    <form onSubmit={handleLogin} className="py-5 flex-1" >
-                        <div className="form-control drop-shadow px-12">
-                            <label className="label">
-                                <span className="label-text text-black ">Email</span>
-                            </label>
-                            <input type="text" name='email' placeholder="email" className="input rounded-none border-none border-transparent  bg-violet-200 drop-shadow text-black focus:outline-indigo-950 focus:bg-white" />
-                        </div>
+      <div>
+      <div className="w-full  text-center mt-12">
 
-                      
-
-                        <div className="form-control drop-shadow  px-12 ">
-                            <label className="label">
-                                <span className="label-text  text-black">Password</span>
-                            </label>
-                            <input type="password" name='password' placeholder="password" className="input rounded-none border-none border-transparent  bg-violet-200 drop-shadow text-black focus:outline-indigo-950 focus:bg-white" />
-
-                            <p className="text-black py-3">New to the website? <span className="text-indigo-950"><Link to="/register">Sign Up</Link></span> here.</p>
-                        </div>
-                        
-                        
-                        <div className="form-control mt-2">
-                            <input className="btn bg-indigo-950 mx-12 text-white drop-shadow hover:bg-white hover:text-cyan-600" type="submit" value="Login" />
-                        </div>
-                        
-                    </form>
-
-                    <div className="flex-1 h-full">
-                        <img className="h-[430px]" src="https://i.postimg.cc/jSHMzwjw/1000-F-282091909-OKTHM5-TJG5-Fa-KYRklh8-IFL9073x-NSt-Bg-1-c0-ESK6-Vd-C-transformed.jpg" alt="" />
-                    </div>
-                </div>
-            </div>
+        <div className="text-center lg:text-left ">
+          <h1 className="text-2xl font-bold text-center text-white lg:text-4xl py-5 mb-5">Sign In</h1>
 
         </div>
+        <div className="flex justify-center items-center  w-full">
+          <div className="card flex-shrink-0 bg-white drop-shadow-2xl rounded-xl shadow-2xl">
+            <form onSubmit={handleLogin} className="card-body  ">
+
+
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text text-xl font-medium">Email</span>
+                </label>
+                <input type="email" placeholder="email" name="email" className="input input-bordered" required />
+              </div>
+              <div className="form-control">
+                <label className="label ">
+                  <span className="label-text text-xl font-medium">Password</span>
+                </label>
+                <input type="password" placeholder="password" className="input input-bordered" name="password" required />
+               
+              </div>
+              <div className="form-control mt-6">
+              <div className="form-control mt-6">
+    <button className="grad-button btn text-xl text-white">Sign In</button>
+</div>
+              </div>
+            </form>
+            <div>
+              <p className="p-8 pt-0 text-xl font-medium">New to the website? <NavLink to="/signup" className="text-2xl font-semibold bg-grad-button">Sign Up</NavLink> here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ToastContainer />
+    </div>
 
 
     );
 };
 
-export default Login;
+export default SignIn;
