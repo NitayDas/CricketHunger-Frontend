@@ -9,6 +9,7 @@ import CommentsSection from "./CommentSection";
 
 const DetailsPage = () => {
   const { match_id } = useParams();
+  console.log(match_id)
   const location = useLocation();
   const { team1, team2 } = location.state || {};
 
