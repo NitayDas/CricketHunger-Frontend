@@ -1,3 +1,4 @@
+/* details.css */
 
 /* Style for the previous arrow */
 .custom-prev-arrow,
@@ -13,8 +14,26 @@
 .custom-next-arrow:hover {
     color: darkgray; /* Change color on hover */
 }
+
 .bg-black {
     background-color: rgb(213, 59, 59) !important; /* Set background color to black */
+}
+
+.h-20 {
+    height: 5rem;
+    width: 5rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.text-lg {
+    font-size: 1.125rem; /* Set large text */
+}
+
+.text-center {
+    text-align: center;
 }
 
 .h-20 {
@@ -44,3 +63,21 @@
     overflow-y: auto;
     text-align: justify;
 }
+
+.details-container {
+    display: flex;
+    justify-content: space-between;
+  
+}
+
+.commentary-section {
+    width: 35%; 
+    padding: 20px;
+    
+}
+
+.comments-section {
+     width: 65%; 
+    padding: 20px;
+}
+

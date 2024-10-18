@@ -5,7 +5,7 @@ import axios from 'axios';
 import { AuthContext } from '../../Provider/AuthProvider';
 import { FaReplyAll } from "react-icons/fa6";
 import { AiFillLike } from "react-icons/ai";
-import './details.css'
+import './details.css';
 
 // Fetch comments for a specific summary
 const fetchComments = async (overSummaryId) => {
@@ -45,29 +45,35 @@ const CommentsSection = ({ overSummaryId }) => {
   });
 
   // Handle comment submission
-  const handleCommentSubmit = (event) => {
-    event.preventDefault();
-    if (comment.trim() === "") return; // Prevent empty comments
+const handleCommentSubmit = (event) => {
+  event.preventDefault();
+  if (comment.trim() === "") return; // Prevent empty comments
 
-    // Check if user is authenticated
-    if (!user?.email) {
-      // Redirect to sign-in page with current pathname
-      navigate("/signin", { state: { from: location.pathname } });
-      return;
-    }
+  // Check if user is authenticated
+  if (!user?.email) {
+    // Redirect to sign-in page with current pathname
+    navigate("/signin", { state: { from: location.pathname } });
+    return;
+  }
 
-    // Prepare comment data
-    const commentData = { username: user.displayName || "Guest", content: comment };
-    mutation.mutate(commentData);
-    setComment(""); // Clear the comment input
-  };
+  // Prepare comment data
+  const commentData = { username: user.displayName || "Guest", content: comment };
+  
+  // Log the comment data before posting it
+  console.log("Comment Data Submitted:", commentData);
+
+  // Post the comment
+  mutation.mutate(commentData);
+  
+  setComment(""); // Clear the comment input
+};
 
   if (loading) {
     return <progress className="progress text-6xl w-56"></progress>;
   }
 
   return (
-    <div className='flex mt-12 p-4 bg-white rounded-lg shadow-md'>
+    <div className='flex p-4 bg-white rounded-2xl shadow-md'>
       <div className='w-1/2 p-4'>
         {isLoading && <p>Loading comments...</p>}
         {isError && <p>Error loading comments!</p>}
@@ -75,28 +81,32 @@ const CommentsSection = ({ overSummaryId }) => {
         <p className='text-2xl font-semibold underline pb-3 mb-3'>Comments</p>
 
         {/* Comments container with scrolling */}
-        <div className="scroll"> {/* Use height instead of max-height */}
-          {comments.map((comment, index) => ( // Display only the last 2 comments
-            <div key={index} className='border-b border-gray-300 py-2'>
-              <h4 className='text-base font-bold'>
-                {comment.username} 
-                <span className="ml-2 text-xs text-gray-600">
-                  {new Date(comment.created_at).toLocaleString()}
-                </span>
-              </h4>
-              <div className='flex items-center justify-between gap-10'>
-                <p className='text-lg font-medium py-2 border-gray-200'>{comment.content}</p>
-                <div className='flex items-center space-x-4 mt-1'>
-                  <button className='items-center text-slate-500 text-base hover:text-slate-700'>
-                    <AiFillLike />
-                  </button>
-                  <button className='text-blue-500 text-base font-semibold hover:text-blue-800'>
-                    <FaReplyAll />
-                  </button>
+        <div className="scroll">
+          {comments.length === 0 ? ( // Check if there are no comments
+            <p>No comments available.</p>
+          ) : (
+            comments.map((comment, index) => (
+              <div key={index} className='border-b border-gray-300 py-2'>
+                <h4 className='text-base font-bold'>
+                  {comment.username} 
+                  <span className="ml-2 text-xs text-gray-600">
+                    {new Date(comment.created_at).toLocaleString()}
+                  </span>
+                </h4>
+                <div className='flex items-center justify-between gap-10'>
+                  <p className='text-lg font-medium py-2 border-gray-200'>{comment.content}</p>
+                  <div className='flex items-center space-x-4 mt-1'>
+                    <button className='items-center text-slate-500 text-base hover:text-slate-700'>
+                      <AiFillLike />
+                    </button>
+                    <button className='text-blue-500 text-base font-semibold hover:text-blue-800'>
+                      <FaReplyAll />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
