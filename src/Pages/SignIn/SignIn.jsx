@@ -1,41 +1,67 @@
-import axios from 'axios';
-import { useState } from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import { useContext } from "react";
+import { useLocation, useNavigate, NavLink } from "react-router-dom";
+import { AuthContext } from "../../Provider/AuthProvider";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SignIn = () => {
-    const [formData, setFormData] = useState({ username: '', password: '' });
-    // const { username, password } = formData;
+    const location = useLocation();  // Get location object
+    const navigate = useNavigate();  // Get navigate function
+    const { signIn } = useContext(AuthContext);  // Get signIn function from AuthContext
 
-    const [message, setMessage] = useState('');
-
-    const navigate = useNavigate();
-
-    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-    const onSubmit = async (e) => {
+    // Handle form submission and user login
+    const handleLogin = async (e) => {
         e.preventDefault();
+        const form = new FormData(e.target);
+        const email = form.get('email');
+        const password = form.get('password');
+
         try {
-          const response = await axios.post('http://localhost:8000/login/', formData);
-          setMessage(response.data.message); // Update message on success
-          navigate('/')
+            await signIn(email, password);  // Sign in the user
+
+            // Redirect to the previous page or home if no state exists
+            const redirectPath = location.state?.from || '/';
+            navigate(redirectPath);  // Navigate to the original page or home
         } catch (error) {
-          setMessage(error.response?.data?.error || 'Login failed'); // Update message on error
+            console.error("Login Error:", error.message);
+            toast.error(error.message);  // Show error message
         }
-      };
-    
-      
+    };
 
     return (
-        <div className='mt-24 container-fluid  w-7/12 mx-auto bg-sky-300 p-8 shadow-lg rounded-md'>
-            <h2 className='text-xl font-medium mb-4 ml-4'>Login</h2>
-            <form onSubmit={onSubmit}>
-                <input className="form-control w-7/12 block border rounded-lg px-4 py-2 mb-4" name="username" value={formData.username} onChange={onChange} placeholder="Username" /><br></br>
-                <input className="form-control w-7/12 block border rounded-lg px-4 py-2 mb-4" name="password" value={formData.password} onChange={onChange} type="password" placeholder="Password" /><br></br>
-                <button className='bg-indigo-600 btn btn-primary hover:bg-indigo-500 rounded-lg px-4 py-2 text-white font-medium mb-4' type="submit">sign in</button>
-            </form>
-
-            <Link to ="/signup"><button className="text-black hover:text-indigo-700 font-medium" >Do not have an account?</button></Link>
-            {message && <p className="mt-4 text-green-500">{message}</p>} 
+        <div>
+            <div className="w-full text-center mt-12">
+                <div className="text-center lg:text-left ">
+                    <h1 className="text-2xl font-bold text-center text-white lg:text-4xl py-5 mb-5">Sign In</h1>
+                </div>
+                <div className="flex justify-center items-center w-full">
+                    <div className="card flex-shrink-0 bg-white drop-shadow-2xl rounded-xl shadow-2xl">
+                        <form onSubmit={handleLogin} className="card-body">
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text text-xl font-medium">Email</span>
+                                </label>
+                                <input type="email" placeholder="email" name="email" className="input input-bordered" required />
+                            </div>
+                            <div className="form-control">
+                                <label className="label ">
+                                    <span className="label-text text-xl font-medium">Password</span>
+                                </label>
+                                <input type="password" placeholder="password" className="input input-bordered" name="password" required />
+                            </div>
+                            <div className="form-control mt-6">
+                                <button className="grad-button btn text-xl text-white">Sign In</button>
+                            </div>
+                        </form>
+                        <div>
+                            <p className="p-8 pt-0 text-xl font-medium">
+                                New to the website? <NavLink to="/signup" className="text-2xl font-semibold bg-grad-button">Sign Up</NavLink> here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ToastContainer />
         </div>
     );
 };

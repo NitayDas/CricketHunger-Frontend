@@ -33,3 +33,14 @@
 .text-center {
     text-align: center;
 }
+
+
+.scroll {
+    margin: 4px, 4px;
+    padding: 4px;
+    background-color: white;
+    height: 150px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: justify;
+}

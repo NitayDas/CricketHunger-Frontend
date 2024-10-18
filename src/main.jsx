@@ -13,6 +13,7 @@ import Root from './Pages/Root/Root';
 import DetailsPage from './Pages/DetailsPage/DetailsPage';
 import Matches from './Pages/Matches/Matches.jsx';
 import SignIn from './Pages/SignIn/SignIn.jsx';
+import AuthProvider from './Provider/AuthProvider.jsx';
 
 const queryClient = new QueryClient();
 
@@ -62,9 +63,13 @@ const router = createBrowserRouter([
 // )
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}> {/* Wrap RouterProvider with QueryClientProvider */}
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+
+   <React.StrictMode>
+  <AuthProvider>
+<QueryClientProvider client={queryClient}>
+<RouterProvider router={router} />
+</QueryClientProvider>
+</AuthProvider>
   </React.StrictMode>,
+ 
 );

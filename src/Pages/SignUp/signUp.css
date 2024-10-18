@@ -1,0 +1,4 @@
+.grad-button {
+    background: linear-gradient(to bottom, #06b6d4, #6ee7b7);
+    color: white; /* Ensures the text color is visible on gradient */
+}
