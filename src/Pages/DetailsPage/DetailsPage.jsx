@@ -301,13 +301,13 @@ const DetailsPage = () => {
                             {comments && comments.map((comment, index) => (
                                 <div key={index} className='border-b border-gray-300 py-2'>
 
-                                    
+                                 <div className='flex items-center space-x-4 mt-1'>
+                                    <div>
                                         <h4 className='text-xs font-bold'>{comment.username} <span className="ml-2 text-xs text-gray-600">{new Date(comment.created_at).toLocaleString()}</span></h4>
                                         <p className='text-lg font-medium py-2  border-gray-200'>{comment.content}</p>
-                                      
-                                        
+                                    </div> 
                                         {/* Like button */}
-                                        <div className='flex items-center space-x-4 mt-1'>
+                                       <div>
                                             <button 
                                                 className='items-center text-slate-500 text-sm hover:text-slate-700' 
                                                 onClick={() => handleLike(comment.id)}
@@ -318,12 +318,14 @@ const DetailsPage = () => {
 
                                             {/* Dislike button */}
                                             <button 
-                                                className=' items-center text-slate-500 text-sm hover:text-slate-700' 
+                                                className=' items-center ml-2 text-slate-500 text-sm hover:text-slate-700' 
                                                 onClick={() => handleDislike(comment.id)}
                                             >
                                                 <i className="fa fa-thumbs-down mr-1"></i> 
                                                 {comment.dislikes}
                                             </button>
+                                        </div>
+                                    </div>
                                        
                                            {/* Reply button */}
                                             <button 
@@ -333,7 +335,6 @@ const DetailsPage = () => {
                                                 Reply
                                             </button>
                                          </div>
-                                </div>
                             ))}
                         </div>
 
