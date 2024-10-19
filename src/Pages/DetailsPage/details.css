@@ -54,16 +54,66 @@
 }
 
 
-.scroll {
-    margin: 4px, 4px;
+/* .scroll {
+    margin: 4px 4px;
     padding: 4px;
+    height: 400px; 
     background-color: white;
-    height: 150px;
     overflow-x: hidden;
     overflow-y: auto;
     text-align: justify;
+} */
+
+
+
+.scroll {
+    height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scroll {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scroll-container {
+  height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-right: 10px;
 }
 
+.older-comments {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.recent-comments {
+  flex-shrink: 0;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scroll-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+  
+  
+ 
 .details-container {
     display: flex;
     justify-content: space-between;
@@ -71,13 +121,13 @@
 }
 
 .commentary-section {
-    width: 35%; 
+    width: 100%; 
     padding: 20px;
     
 }
 
 .comments-section {
-     width: 65%; 
+     width:100%; 
     padding: 20px;
 }
 
