@@ -13,6 +13,8 @@ import Root from './Pages/Root/Root';
 import DetailsPage from './Pages/DetailsPage/DetailsPage';
 import Matches from './Pages/Matches/Matches.jsx';
 import SignIn from './Pages/SignIn/SignIn.jsx';
+import Series from './Pages/Series/Series.jsx';
+import SeriesMatches from './Pages/Series/SeriesMatches.jsx';
 import AuthProvider from './Provider/AuthProvider.jsx';
 
 const queryClient = new QueryClient();
@@ -34,6 +36,16 @@ const router = createBrowserRouter([
           path: "matches/",
           element:<Matches></Matches>,
   
+        },
+        {
+          path: "series/",
+          element:<Series></Series>,
+  
+        },
+
+        {
+          path:"/seriesmatches/:seriesId",
+          element:<SeriesMatches></SeriesMatches>,
         },
 
         {
