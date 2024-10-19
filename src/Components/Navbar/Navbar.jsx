@@ -54,7 +54,7 @@ const navOptions = <>
   </ul>
   </div>
   <div className="navbar-end">
-  <ul className="menu font-semibold text-lg menu-horizontal px-1">
+  <ul className="menu font-semibold text-base menu-horizontal px-1">
   {navOptions}
    
     </ul>

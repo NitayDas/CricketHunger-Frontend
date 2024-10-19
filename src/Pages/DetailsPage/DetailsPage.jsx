@@ -16,6 +16,8 @@ const DetailsPage = () => {
   const [overSummary, setOverSummary] = useState({});
   const [scoreboard1, setScoreboard1] = useState([]);
   const [scoreboard2, setScoreboard2] = useState([]);
+  const [scoreboard3, setScoreboard3] = useState([]);
+  const [scoreboard4, setScoreboard4] = useState([]);
   const [selectedOver, setSelectedOver] = useState(null);
   const [commentary, setCommentary] = useState("");
   const [comments, setComments] = useState([]);
@@ -45,6 +47,8 @@ const DetailsPage = () => {
         setOverSummary(groupedSummary);
         setScoreboard1(scoreboard.filter((item) => item.inningsId === "1"));
         setScoreboard2(scoreboard.filter((item) => item.inningsId === "2"));
+        setScoreboard3(scoreboard.filter((item) => item.inningsId === "3"));
+        setScoreboard4(scoreboard.filter((item) => item.inningsId === "4"));
         setSelectedOver(sortedSummary[sortedSummary.length - 1]?.OverNum);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -135,25 +139,47 @@ const settings = {
     <div className=" mt-8 mx-auto ">
          {/* Scoreboard Section */}
          <div className="px-10 flex justify-center items-center  mb-8">
-          <div className="card w-[480px] h-[150px] bg-white shadow-lg border-2 p-2 m-3 rounded-lg">
-            <div className="space-y-2 flex flex-col items-center justify-center h-full">
+          <div className="card w-[480px] h-[150px] bg-white shadow-lg border-2 p-4 m-4 rounded-lg">
+            <div className="space-y-2 flex flex-col justify-center h-full ml-4">
               {scoreboard1.map((item, index) => (
-                <div className="flex gap-8 items-center" key={index}>
-                  <h2 className="text-3xl text-black font-bold">
+                <div className="flex gap-8 " key={index}>
+                  <h2 className="text-xl text-slate-700 font-bold">
                     {item.bat_team}
                   </h2>
-                  <h2 className="text-3xl text-black font-semibold">
+                  <h2 className="text-xl text-slate-700 font-semibold">
                     {item.score}/{item.wickets}
                     <span className="ml-4">({item.overs})</span>
                   </h2>
                 </div>
               ))}
               {scoreboard2.map((item, index) => (
-                <div className="flex gap-8 items-center" key={index}>
-                  <h2 className="text-3xl text-black font-bold">
+                <div className="flex gap-8 " key={index}>
+                  <h2 className="text-xl text-slate-700 font-bold">
                     {item.bat_team}
                   </h2>
-                  <h2 className="text-3xl text-black font-semibold">
+                  <h2 className="text-xl text-slate-700 font-semibold">
+                    {item.score}/{item.wickets}
+                    <span className="ml-4">({item.overs})</span>
+                  </h2>
+                </div>
+              ))}
+              {scoreboard3.map((item, index) => (
+                <div className="flex gap-8 " key={index}>
+                  <h2 className="text-xl text-slate-700 font-bold">
+                    {item.bat_team}
+                  </h2>
+                  <h2 className="text-xl text-slate-700 font-semibold">
+                    {item.score}/{item.wickets}
+                    <span className="ml-4">({item.overs})</span>
+                  </h2>
+                </div>
+              ))}
+              {scoreboard4.map((item, index) => (
+                <div className="flex gap-8 " key={index}>
+                  <h2 className="text-xl text-slate-700 font-bold">
+                    {item.bat_team}
+                  </h2>
+                  <h2 className="text-xl text-slate-700 font-semibold">
                     {item.score}/{item.wickets}
                     <span className="ml-4">({item.overs})</span>
                   </h2>
