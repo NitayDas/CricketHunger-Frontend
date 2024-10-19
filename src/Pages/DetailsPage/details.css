@@ -131,3 +131,16 @@
     padding: 20px;
 }
 
+/* Change the arrow colors */
+.slick-prev::before, .slick-next::before {
+    color: rgb(23, 14, 76); /* Set this to your desired arrow color */
+    font-size : 28px;
+    display: "block";
+    border-radius: "50%";
+}
+
+/* Optional: Hover effect to change arrow color on hover */
+.slick-prev:hover::before, .slick-next:hover::before {
+    color: rgb(23, 14, 76); /* Change color on hover if needed */
+    font-size : 30px;
+}
