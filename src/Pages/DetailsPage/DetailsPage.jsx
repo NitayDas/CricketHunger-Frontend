@@ -14,7 +14,8 @@ const DetailsPage = () => {
     const [scoreboard2, setScoreboard2] = useState([]);
     const [scoreboard3, setScoreboard3] = useState([]);
     const [scoreboard4, setScoreboard4] = useState([]);
-    const [status, SetStatus] = useState([]);
+    const [status, SetStatus] = useState('');
+    const [series_name, setSeriesName] = useState('');
     const [selectedOver, setSelectedOver] = useState(null);
     const [error, setError] = useState(null);
 
@@ -22,8 +23,12 @@ const DetailsPage = () => {
         const fetchMatchData = async () => {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/matchDetails/${match_id}/`);
-                const { scoreboard, oversummary, match_status } = response.data;
+                const { scoreboard, oversummary, match_info } = response.data;
+                const [match_status, series_name] = match_info.split(' --- ');
                 SetStatus(match_status);
+                setSeriesName(series_name);
+                console.log(match_status);
+                console.log(series_name);
 
                 const sortedSummary = oversummary.sort((a, b) => a.OverNum - b.OverNum);
                 const groupedSummary = sortedSummary.reduce((acc, item) => {
@@ -90,11 +95,10 @@ const DetailsPage = () => {
             <div className='mt-24 px-12'>
                 <div className='card w-[480px] h-[220px] bg-white shadow-lg border-2 p-2 m-3 rounded-lg'>
                     <div className="space-y-2 p-2">
-                        <div className="flex">
-                            <h1 className="text-xs mr-1 font-semibold whitespace-nowrap overflow-hidden"><span className="font-semibold"></span></h1>
-                            <h1 className="text-xs text-slate-700 whitespace-nowrap overflow-hidden">series_name</h1>
+                        <div className="flex mb-3">
+                            <h1 className="text-sm text-slate-700 whitespace-nowrap overflow-hidden">{series_name}</h1>
                         </div>
-                        <div className='space-y-2'>
+                        <div className='space-y-2 '>
                             {scoreboard1.map((item, index) => (
                                 <div className='flex gap-8 items-center text-slate-700 ' key={index}>
                                     <h2 className='text-sm font-bold'>{item.bat_team}</h2>
@@ -129,7 +133,7 @@ const DetailsPage = () => {
 
 
         
-        <div className="relative justify-center bg-white p-4 my-6 h-24 rounded-full drop-shadow-lg flex items-center"> 
+        <div className="relative justify-center bg-white p-2 my-12 h-18 rounded-full drop-shadow-lg flex items-center"> 
             <div className="absolute -left-2 h-16 w-32 flex items-center justify-center bg-green-600 rounded-full text-white text-xl font-semibold">
                Over: {latestOverNum}
             </div>
@@ -138,7 +142,7 @@ const DetailsPage = () => {
                 <Slider className='ml-44 drop-shadow-2xl' {...settings}>
                     {Object.keys(overSummary).map((overNum, index) => (
                         <div key={index} onClick={() => handleOverClick(overNum)} className='cursor-pointer'>
-                            <h3 className={`${ selectedOver == overNum ?  'bg-green-400 h-20 w-20'  : 'bg-white drop-shadow-lg h-20 w-20'}  text-black font-semibold text-lg text-center rounded-full my-1 mx-4 flex items-center justify-center`} onClick={() => handleNumClick(overNum)}>
+                            <h3 className={`${ selectedOver == overNum ?  'bg-green-400 h-16 w-16'  : 'bg-white drop-shadow-lg h-16 w-16'}  text-black font-semibold text-lg text-center rounded-full my-1 mx-4 flex items-center justify-center`} onClick={() => handleNumClick(overNum)}>
                                  {overNum}
                             </h3>
                         </div>

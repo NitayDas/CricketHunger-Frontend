@@ -27,7 +27,7 @@ const navOptions = <>
 
 
     return (
-        <div className='rounded-xl drop-shadow-2xl'>
+        <div className='rounded-xl drop-shadow-lg'>
      < div className="navbar bg-base-100 px-10 rounded-2xl">
   <div className="navbar-start">
     <div className="dropdown">
