@@ -6,6 +6,7 @@ import { AuthContext } from "../../Provider/AuthProvider";
 import { FaReplyAll } from "react-icons/fa6";
 import { AiFillLike } from "react-icons/ai";
 import "./details.css";
+import ReplySection from "./ReplySection";
 
 // Fetch comments for a specific summary
 const fetchComments = async (overSummaryId) => {
@@ -123,7 +124,7 @@ const CommentsSection = ({ overSummaryId }) => {
       <div className="p-4">
         <form onSubmit={handleCommentSubmit}>
           <textarea
-            className="w-[750px] h-32 p-4 border-2 border-gray-300 rounded-lg"
+            className="w-[680px] h-32 p-4 border-2 border-gray-300 rounded-lg"
             rows="2"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -141,22 +142,20 @@ const CommentsSection = ({ overSummaryId }) => {
   );
 };
 
+
+const RepliesList = ({ replies }) => (
+  <div className="pl-4">
+    {replies.map((reply, index) => (
+      <div key={index} className="border-b border-gray-200 py-1">
+        <h5 className="font-bold">{reply.username}</h5>
+        <p>{reply.content}</p>
+      </div>
+    ))}
+  </div>
+);
+
 // CommentItem Component with Reply Box
 const CommentItem = ({ comment, isReplying, setIsReplying }) => {
-  const [replyContent, setReplyContent] = useState("");
-
-  // Handle reply submission (you can modify this to include an API call to post the reply)
-  const handleReplySubmit = (event) => {
-    event.preventDefault();
-    if (replyContent.trim() === "") return;
-
-    // Here, you would call the API to submit the reply
-    console.log("Reply Submitted:", replyContent);
-
-    // Clear the reply input and close the reply box
-    setReplyContent("");
-    setIsReplying(false);
-  };
 
   return (
     <div className="border-b border-gray-300 py-2">
@@ -183,24 +182,17 @@ const CommentItem = ({ comment, isReplying, setIsReplying }) => {
         </div>
       </div>
 
-      {/* Reply box */}
-      {isReplying && (
-        <form onSubmit={handleReplySubmit} className="mt-4 flex items-center gap-5 justify-center">
-          <textarea
-            className="w-[460px] h-12 p-2 border-2 border-gray-300 rounded-lg"
-            rows="2"
-            value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
-            placeholder="Write your reply here..."
-          />
-          <button
-            type="submit"
-            className="mt-2 px-4 py-2 bg-sky-600 text-white rounded-lg"
-          >
-           Reply
-          </button>
-        </form>
+      {comment.replies && comment.replies.length > 0 && (
+        <RepliesList replies={comment.replies} />
       )}
+
+
+      {/* Use ReplySection component */}
+      <ReplySection
+        comment={comment}
+        isReplying={isReplying}
+        setIsReplying={setIsReplying}
+      />
     </div>
   );
 };
