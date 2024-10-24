@@ -6,7 +6,11 @@ import { AuthContext } from "../../Provider/AuthProvider";
 import { FaReplyAll } from "react-icons/fa6";
 import { AiFillLike } from "react-icons/ai";
 import "./details.css";
+import PropTypes from "prop-types";
 import ReplySection from "./ReplySection";
+import ReplyList from "./ReplyList";
+
+
 
 // Fetch comments for a specific summary
 const fetchComments = async (overSummaryId) => {
@@ -70,12 +74,15 @@ const CommentsSection = ({ overSummaryId }) => {
 
     // Prepare comment data
     const commentData = {
-      username: user.displayName || "Guest",
+        user: {
+          name: user.displayName,
+          email: user.email,
+      },
       content: comment,
+      parent : null,
     };
 
-    // Log the comment data before posting it
-    console.log("Comment Data Submitted:", commentData);
+    
 
     // Post the comment
     mutation.mutate(commentData);
@@ -111,10 +118,13 @@ const CommentsSection = ({ overSummaryId }) => {
               <CommentItem
                 key={index}
                 comment={comment}
+                replyingTo={replyingTo}
+                setReplyingTo={setReplyingTo}
                 isReplying={replyingTo === index} // Check if this comment is being replied to
                 setIsReplying={() =>
                   setReplyingTo(replyingTo === index ? null : index)
-                } // Toggle reply box
+                } 
+                mutation={mutation}
               />
             ))
           )}
@@ -143,30 +153,45 @@ const CommentsSection = ({ overSummaryId }) => {
 };
 
 
-const RepliesList = ({ replies }) => (
-  <div className="pl-4">
-    {replies.map((reply, index) => (
-      <div key={index} className="border-b border-gray-200 py-1">
-        <h5 className="font-bold">{reply.username}</h5>
-        <p>{reply.content}</p>
-      </div>
-    ))}
-  </div>
-);
+function timeAgo(date) {
+  const now = new Date();
+  const seconds = Math.floor((now - new Date(date)) / 1000);
+
+  let interval = Math.floor(seconds / 31536000);
+  if (interval >= 1) return interval + "y" ;
+
+  interval = Math.floor(seconds / 2592000);
+  if (interval >= 1) return interval + "mon"  ;
+
+  interval = Math.floor(seconds / 86400);
+  if (interval >= 1) return interval + "d"   ;
+
+  interval = Math.floor(seconds / 3600);
+  if (interval >= 1) return interval + "h"  ;
+
+  interval = Math.floor(seconds / 60);
+  if (interval >= 1) return interval + "m"  ;
+
+  return Math.floor(seconds) + "s"  ;
+}
+
+
+
+
 
 // CommentItem Component with Reply Box
-const CommentItem = ({ comment, isReplying, setIsReplying }) => {
+const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation, setIsReplying}) => {
 
   return (
-    <div className="border-b border-gray-300 py-2">
-      <h4 className="text-base font-bold">
-        {comment.username}
-        <span className="ml-2 text-xs text-gray-600">
-          {new Date(comment.created_at).toLocaleString()}
+    <div className="border-b border-gray-300 px-2">
+      <h4 className="text-xs font-bold text-gray-700">
+         {comment.user.name}
+        <span className="ml-2 text-xs font-medium text-gray-600">
+          {timeAgo(comment.created_at)}
         </span>
       </h4>
       <div className="flex items-center justify-between gap-10">
-        <p className="text-lg font-medium py-2 border-gray-200">
+        <p className="text-base text-gray-900 font-medium py-1 border-gray-200">
           {comment.content}
         </p>
         <div className="flex items-center space-x-4 mt-1">
@@ -181,20 +206,73 @@ const CommentItem = ({ comment, isReplying, setIsReplying }) => {
           </button>
         </div>
       </div>
-
+      
+      <div className="pl-6">
       {comment.replies && comment.replies.length > 0 && (
-        <RepliesList replies={comment.replies} />
+        <ReplyList
+          replies={comment.replies}
+          setIsReplying={setIsReplying}
+          isReplying={isReplying}
+          replyingTo={replyingTo}
+          setReplyingTo={setReplyingTo}
+          mutation={mutation}
+          timeAgo={timeAgo}
+        />
       )}
+      </div>
 
+     
+       {isReplying && (
+        <ReplySection
+          commentId={comment.id}
+          setReplyingTo={setReplyingTo}
+          replyingTo={replyingTo}
+          isReplying={isReplying}
+          mutation={mutation}
+        />
+       )}
 
-      {/* Use ReplySection component */}
-      <ReplySection
-        comment={comment}
-        isReplying={isReplying}
-        setIsReplying={setIsReplying}
-      />
     </div>
+    
   );
 };
 
+
+
+
+CommentItem.propTypes = {
+  comment: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    user: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+    }).isRequired,
+    content: PropTypes.string.isRequired,
+    created_at: PropTypes.string.isRequired,
+    replies: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        user: PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          email: PropTypes.string.isRequired,
+        }),
+        content: PropTypes.string.isRequired,
+        created_at: PropTypes.string.isRequired,
+      })
+    ),
+  }).isRequired,
+  
+  isReplying: PropTypes.bool.isRequired,
+  setIsReplying: PropTypes.func.isRequired,
+  replyingTo: PropTypes.number,
+  setReplyingTo: PropTypes.func.isRequired,
+  mutation: PropTypes.func.isRequired,
+};
+  
+
+CommentsSection.propTypes = {
+  overSummaryId :PropTypes.number.isRequired,
+};
+
+  
 export default CommentsSection;

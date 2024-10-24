@@ -8,14 +8,19 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Home from './Pages/Home/Home';
 import ErrorPage from './Pages/ErrorPage/ErrorPage';
+import SignIn from './Pages/SignIn/SignIn.jsx';
 import SignUp from './Pages/SignUp/SignUp.jsx';
+import AuthProvider from './Provider/AuthProvider.jsx';
 import Root from './Pages/Root/Root';
 import DetailsPage from './Pages/DetailsPage/DetailsPage';
 import Matches from './Pages/Matches/Matches.jsx';
-import SignIn from './Pages/SignIn/SignIn.jsx';
+// import Signin from './Pages/Authentication/Signin.jsx';
+// import Signup from './Pages/Authentication/Signup.jsx'
+// import { Authprovider } from './Pages/Authentication/Authprovider.jsx';
 import Series from './Pages/Series/Series.jsx';
 import SeriesMatches from './Pages/Series/SeriesMatches.jsx';
-import AuthProvider from './Provider/AuthProvider.jsx';
+
+
 
 const queryClient = new QueryClient();
 

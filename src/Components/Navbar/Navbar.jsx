@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom';
 import './navbar.css'
 import { useContext } from 'react';
 import  { AuthContext } from '../../Provider/AuthProvider';
+// import { AuthContext } from '../../Pages/Authentication/Authprovider';
 
 const Navbar = () => {
 
   const { user, logOut } = useContext(AuthContext);
-  console.log(user);
+  console.log(user)
   
 
   const handleLogOut = () => {
