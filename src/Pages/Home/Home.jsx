@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Card from '../../Components/Card/Card';
+import Top_Comments from './Top_Comments';
 
 
 const Home = () => {
@@ -40,6 +41,12 @@ const Home = () => {
                 </div>
             ))}
         </div>
+        
+        {/* Top Comments Section */}
+        <div className="mt-12 px-10">
+            <Top_Comments />
+        </div>
+       
 
          {/* home news section */}
          <div className="new-div bg-sky-500 text-white p-4 mb-4 mt-10 mr-5 rounded-lg">

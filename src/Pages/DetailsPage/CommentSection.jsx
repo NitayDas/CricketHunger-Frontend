@@ -125,6 +125,7 @@ const CommentsSection = ({ overSummaryId }) => {
                   setReplyingTo(replyingTo === index ? null : index)
                 } 
                 mutation={mutation}
+                user_email={user.email}
               />
             ))
           )}
@@ -180,7 +181,31 @@ function timeAgo(date) {
 
 
 // CommentItem Component with Reply Box
-const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation, setIsReplying}) => {
+const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation, setIsReplying,user_email}) => {
+
+  const [likes, setLikes] = useState(comment.likes);
+  const [likedByUser, setLikedByUser] = useState(false);
+  
+
+  useEffect(() => {
+    if (comment.liked_by && Array.isArray(comment.liked_by)) {
+      setLikedByUser(comment.liked_by.includes(user_email));
+    }
+  }, [comment.liked_by, user_email]);
+
+
+  const handleLikeToggle = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/comments/like/${comment.id}/`,
+      {user_email: user_email});
+
+      setLikes(response.data.likes);
+      setLikedByUser(!likedByUser); 
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
 
   return (
     <div className="border-b border-gray-300 px-2">
@@ -195,9 +220,12 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
           {comment.content}
         </p>
         <div className="flex items-center space-x-4 mt-1">
-          <button className="items-center text-slate-500 text-base hover:text-slate-700">
+
+          <button className={`flex items-center text-base ${likedByUser ? 'text-blue-500' : 'text-slate-500'} hover:text-slate-700`} onClick={handleLikeToggle}>
             <AiFillLike />
+            <span className="ml-1 text-slate-500">{likes}</span>
           </button>
+
           <button
             className="text-blue-500 text-base font-semibold hover:text-sky-600"
             onClick={setIsReplying}
@@ -249,6 +277,8 @@ CommentItem.propTypes = {
     }).isRequired,
     content: PropTypes.string.isRequired,
     created_at: PropTypes.string.isRequired,
+    likes :PropTypes.number.isRequired,
+    liked_by: PropTypes.arrayOf(PropTypes.string).isRequired,
     replies: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,
@@ -267,6 +297,7 @@ CommentItem.propTypes = {
   replyingTo: PropTypes.number,
   setReplyingTo: PropTypes.func.isRequired,
   mutation: PropTypes.func.isRequired,
+  user_email:PropTypes.string.isRequired,
 };
   
 

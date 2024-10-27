@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import "./details.css";
 import CommentsSection from "./CommentSection";
 
+const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+};
+
 const DetailsPage = () => {
     const { match_id } = useParams();
+    const query = useQuery();
+    const over_num = query.get('over_num');
     const [overSummary, setOverSummary] = useState([]);
     const [scoreboard1, setScoreboard1] = useState([]);
     const [scoreboard2, setScoreboard2] = useState([]);
@@ -16,9 +22,13 @@ const DetailsPage = () => {
     const [scoreboard4, setScoreboard4] = useState([]);
     const [status, SetStatus] = useState('');
     const [series_name, setSeriesName] = useState('');
-    const [selectedOver, setSelectedOver] = useState(null);
     const [error, setError] = useState(null);
+    const [searchOver, setSearchOver] = useState("");
+    const [selectedOver, setSelectedOver] = useState(null);
+    const sliderRef = useRef(null);
+    
 
+    
     useEffect(() => {
         const fetchMatchData = async () => {
             try {
@@ -58,23 +68,50 @@ const DetailsPage = () => {
         return <div>{error}</div>;
     }
 
+
+    //Slider part
     const latestOverNum = Math.max(...Object.keys(overSummary).map(Number));
+    const OverNum = over_num? over_num : latestOverNum;
+
+    const OverIndex =  Object.keys(overSummary).indexOf(OverNum.toString());
+    // console.log(OverIndex);
 
     useEffect(() => {
-        if (Object.keys(overSummary).length > 0) {
-            setSelectedOver(latestOverNum);
+
+        if (sliderRef.current) {
+            sliderRef.current.slickGoTo(OverIndex);
         }
-    }, [overSummary, latestOverNum]);
+
+        if (Object.keys(overSummary).length > 0) {
+            setSelectedOver(OverNum);
+        }
+    }, [overSummary,OverIndex,OverNum]);
+
+    
+    //search handle
+    const handleSearch = () => {
+        const SearchIndex = Object.keys(overSummary).indexOf(searchOver.toString());
+
+        if (SearchIndex !== -1 && sliderRef.current) {
+            sliderRef.current.slickGoTo(SearchIndex);
+        }
+
+        if (searchOver && overSummary[searchOver]) {
+            setSelectedOver(searchOver);
+        } 
+
+        setSearchOver("");
+    };
+
 
     const slidesToShow = Math.min(6, Object.keys(overSummary).length);
-  
 
     const settings = {
         infinite: false,
         speed: 400,
         slidesToShow: slidesToShow,
         slidesToScroll: 6,
-        initialSlide : 400,
+        // initialSlide : 400,
         afterChange: (index) => {
             const overNums = Object.keys(overSummary);
             const selectedIdx = Math.min(index, overNums.length - 1);
@@ -82,14 +119,12 @@ const DetailsPage = () => {
         }
     };
 
+
     const handleOverClick = (overNum) => {
         setSelectedOver(overNum);
     };
 
-    const handleNumClick = (overNum) => {
-        setSelectedOver(overNum);
-    };
-
+    
     return (
         <div className='mt-24 px-12 '>
             <div className='mt-24 px-12'>
@@ -131,18 +166,30 @@ const DetailsPage = () => {
                 </div>
             </div>
 
+            {/* Search OverSummary by ID */}
+            <div className="my-4">
+                <input
+                    type="text"
+                    value={searchOver}
+                    onChange={(e) => setSearchOver(e.target.value)}
+                    placeholder="Enter OverSummary ID"
+                    className="p-2 border rounded"
+                />
+                <button onClick={handleSearch} className="ml-2 p-2 bg-blue-500 text-white rounded">Search</button>
+            </div>
 
-        
+
+        {/*slider*/}
         <div className="relative justify-center bg-white p-2 my-12 h-18 rounded-full drop-shadow-lg flex items-center"> 
             <div className="absolute -left-2 h-16 w-32 flex items-center justify-center bg-green-600 rounded-full text-white text-xl font-semibold">
                Over: {latestOverNum}
             </div>
 
             <div className='w-full'>
-                <Slider className='ml-44 drop-shadow-2xl' {...settings}>
+                <Slider className='ml-44 drop-shadow-2xl' ref={sliderRef} {...settings}>
                     {Object.keys(overSummary).map((overNum, index) => (
                         <div key={index} onClick={() => handleOverClick(overNum)} className='cursor-pointer'>
-                            <h3 className={`${ selectedOver == overNum ?  'bg-green-400 h-16 w-16'  : 'bg-white drop-shadow-lg h-16 w-16'}  text-black font-semibold text-lg text-center rounded-full my-1 mx-4 flex items-center justify-center`} onClick={() => handleNumClick(overNum)}>
+                            <h3 className={`${ selectedOver == overNum ?  'bg-green-400 h-16 w-16'  : 'bg-white drop-shadow-lg h-16 w-16'}  text-black font-semibold text-lg text-center rounded-full my-1 mx-4 flex items-center justify-center`}>
                                  {overNum}
                             </h3>
                         </div>
