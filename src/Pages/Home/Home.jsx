@@ -3,7 +3,6 @@ import axios from 'axios';
 import Card from '../../Components/Card/Card';
 import Top_Comments from './Top_Comments';
 import Recent_Comments from './Recent_Comments';
-import NewsSection from '../../Components/NewsSection/NewsSection';
 
 
 const Home = () => {
@@ -38,7 +37,7 @@ const Home = () => {
     <div className='px-10 mt-5'>
         <div className="carousel rounded-box container mx-5">
             {filtercards.map(card => (
-                <div className="carousel-item  mx-4" key={card.id}>
+                <div className="carousel-item" key={card.id}>
                     <Card card={card} />
                 </div>
             ))}
@@ -59,23 +58,22 @@ const Home = () => {
         </div>
        
 
-        <div className="flex justify-center items-center">
-        <div className="w-2/3 mt-12 px-10 grid grid-cols-2 gap-10">
-            {/* Top Comments Section */}
-            <div className="w-full ">
-                <Top_Comments />
-            </div>
-
-            {/* Top Comments Section */}
-            <div className="w-full">
-                <Recent_Comments/>
-            </div>
-        </div>
-        </div>
-       
-
          {/* home news section */}
-        <NewsSection></NewsSection>
+         <div className="new-div bg-sky-500 text-white p-4 mb-4 mt-10 mr-5 rounded-lg">
+            <div className='text-white p-2 mx-4 my-4'>
+                <div className='flex '>
+                <p className='text-sm font-medium'>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta eius voluptates distinctio quo amet quos quae dolore reprehenderit
+                 consequuntur, nulla odio? Dignissimos cum officia nemo ipsum dolorum delectus modi earum ex doloribus consequatur quae inventore veniam, aliquidnostrum reiciendis, 
+                 quasi  quo eum tempora explicabo.</p>
+                 </div>
+            </div>
+
+            <div className='text-white p-2 mx-4 my-4'>
+                <p className='text-sm font-medium'>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta eius voluptates distinctio quo amet quos quae dolore reprehenderit
+                 consequuntur, nulla odio? Dignissimos cum officia nemo ipsum dolorum delectus modi earum ex doloribus consequatur quae inventore veniam, aliquidnostrum reiciendis, 
+                 quasi  quo eum tempora explicabo.</p>
+            </div>
+        </div>
     </div>
 
         
