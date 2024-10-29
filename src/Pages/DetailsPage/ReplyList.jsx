@@ -43,14 +43,14 @@ const ReplyItem = ({ reply, setIsReplying, replyingTo, setReplyingTo, isReplying
   
   useEffect(() => {
     if (reply.liked_by && Array.isArray(reply.liked_by)) {
-      setLikedByUser(reply.liked_by.includes(user.email));
+      setLikedByUser(reply.liked_by.includes(user?.email));
     }
-  }, [reply.liked_by, user.email]);
+  }, [reply.liked_by, user?.email]);
 
   const handleLikeToggle = async () => {
     try {
       const response = await axios.post(`http://127.0.0.1:8000/comments/like/${reply.id}/`,
-      {user_email: user.email});
+      {user_email: user?.email});
 
       setLikes(response.data.likes);
       setLikedByUser(!likedByUser); 
