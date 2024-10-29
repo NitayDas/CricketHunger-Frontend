@@ -32,6 +32,14 @@ const ReplyItem = ({ reply, setIsReplying, replyingTo, setReplyingTo, isReplying
   const { user } = useContext(AuthContext);
   const [likes, setLikes] = useState(reply.likes);
   const [likedByUser, setLikedByUser] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => setIsExpanded(!isExpanded);
+
+  const contentPreview = isExpanded
+    ? reply.content
+    : reply.content.split(" ").slice(0, 20).join(" ") + (reply.content.split(" ").length > 20 ? "..." : "");
+
   
   useEffect(() => {
     if (reply.liked_by && Array.isArray(reply.liked_by)) {
@@ -62,12 +70,18 @@ return (
 
     <div className="flex items-center justify-between gap-10 py-1">
         <p className="text-base text-gray-900">
-        {reply.parent_user && reply.user && reply.parent_user.email !== reply.user.email && (
-            <span className="text-xs font-bold text-gray-700 mr-2">
-            @{reply.parent_user.name}
+          {reply.parent_user && reply.user && reply.parent_user.email !== reply.user.email && (
+              <span className="text-xs font-bold text-gray-700 mr-2">
+              @{reply.parent_user.name}
+              </span>
+          )}
+
+          {contentPreview}
+          {reply.content.split(" ").length > 20 && (
+            <span className="text-green-700 cursor-pointer ml-1 font-semibold text-sm" onClick={ toggleExpand}>
+              {isExpanded ? "See less" : "See more"}
             </span>
-        )}
-        {reply.content}
+          )}
         </p>
 
         <div className="flex items-center space-x-4 mt-1">

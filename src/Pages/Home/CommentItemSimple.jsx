@@ -1,6 +1,7 @@
 import { AiFillLike } from 'react-icons/ai';
 import PropTypes from 'prop-types';
-import { Link,useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 
 function timeAgo(date) {
@@ -28,6 +29,13 @@ function timeAgo(date) {
 
 
 const CommentItemSimple = ({ comment }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const toggleExpand = () => setIsExpanded(!isExpanded);
+
+  const contentPreview = isExpanded
+    ? comment.content
+    : comment.content.split(" ").slice(0, 20).join(" ") + (comment.content.split(" ").length > 20 ? "..." : "");
+
 
     const navigate = useNavigate();
 
@@ -51,16 +59,20 @@ const CommentItemSimple = ({ comment }) => {
           </span>
         </h4>
         <div className="flex items-center justify-between gap-10">
-           <p
-              className="flex-1 text-base text-gray-900 font-medium py-1 border-gray-200 cursor-pointer hover:text-blue-600"
-              onClick={handleRedirect}
-            >
-              {comment.content}
-            </p>
+        <p
+          className="flex-1 text-base text-gray-900 font-medium py-1 border-gray-200 cursor-pointer"
+         >
+          <span className=' hover:text-blue-600' onClick={handleRedirect}>{contentPreview}</span>
+          {comment.content.split(" ").length > 20 && (
+            <span className="text-green-700 cursor-pointer ml-1 font-semibold text-sm" onClick={ toggleExpand}>
+              {isExpanded ? "See less" : "See more"}
+            </span>
+          )}
+        </p>
             <div className="items-center space-x-4 mt-2">
-            <button className="flex items-center text-base text-slate-500 hover:text-blue-500">
+            <button className="flex items-center text-base text-slate-500">
                 <AiFillLike />
-                <span className="ml-1">{comment.likes}</span>
+                <span className="ml-1">{comment.likes }</span>
             </button>
             </div>
         </div>

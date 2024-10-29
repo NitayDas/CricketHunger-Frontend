@@ -185,6 +185,14 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
 
   const [likes, setLikes] = useState(comment.likes);
   const [likedByUser, setLikedByUser] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => setIsExpanded(!isExpanded);
+
+  const contentPreview = isExpanded
+    ? comment.content
+    : comment.content.split(" ").slice(0, 20).join(" ") + (comment.content.split(" ").length > 20 ? "..." : "");
+
   
 
   useEffect(() => {
@@ -216,8 +224,15 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
         </span>
       </h4>
       <div className="flex items-center justify-between gap-10">
-        <p className="text-base text-gray-900 font-medium py-1 border-gray-200">
-          {comment.content}
+      <p
+          className="flex-1 text-base text-gray-900 font-medium py-1 border-gray-200 cursor-pointer"
+         >
+          {contentPreview}
+          {comment.content.split(" ").length > 20 && (
+            <span className="text-green-700 cursor-pointer ml-1 font-semibold text-sm" onClick={ toggleExpand}>
+              {isExpanded ? "See less" : "See more"}
+            </span>
+          )}
         </p>
         <div className="flex items-center space-x-4 mt-1">
 
