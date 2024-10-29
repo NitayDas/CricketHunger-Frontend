@@ -1,12 +1,16 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../Provider/AuthProvider";
 import { FaReplyAll } from "react-icons/fa6";
 import { AiFillLike } from "react-icons/ai";
 import "./details.css";
+import PropTypes from "prop-types";
 import ReplySection from "./ReplySection";
+import ReplyList from "./ReplyList";
+
+
 
 // Fetch comments for a specific summary
 const fetchComments = async (overSummaryId) => {
@@ -70,12 +74,15 @@ const CommentsSection = ({ overSummaryId }) => {
 
     // Prepare comment data
     const commentData = {
-      username: user.displayName || "Guest",
+        user: {
+          name: user?.displayName,
+          email: user?.email,
+      },
       content: comment,
+      parent : null,
     };
 
-    // Log the comment data before posting it
-    console.log("Comment Data Submitted:", commentData);
+    
 
     // Post the comment
     mutation.mutate(commentData);
@@ -95,64 +102,63 @@ const CommentsSection = ({ overSummaryId }) => {
   }
 
   const handleSignInSubmission = () => {
-    if (!user) {
+    if (!user?.email) {
         // Redirect to login with state to return to this page after login
         navigate('/signin', { state: { from: location } });
     }
 }
 
-  return (
-    <div className="flex p-4 bg-white rounded-2xl h-auto shadow-md">
-      <div className="w-1/2 p-4">
-        {isLoading && <p>Loading comments...</p>}
-        {isError && <p>Error loading comments!</p>}
+return (
+  <div className="flex p-4 bg-white rounded-2xl h-auto shadow-md">
+    <div className="w-1/2 p-4">
+      {isLoading && <p>Loading comments...</p>}
+      {isError && <p>Error loading comments!</p>}
 
-        <p className="text-2xl font-semibold underline pb-3 mb-3">Comments</p>
+      <p className="text-2xl font-semibold underline pb-3 mb-3">Comments</p>
 
-        {/* Comments container with scrolling */}
-        <div className="scroll" ref={scrollRef}>
-          {comments.length === 0 ? (
-            <p>No comments available.</p>
-          ) : (
-            comments.map((comment, index) => (
-              <CommentItem
-                key={index}
-                comment={comment}
-                isReplying={replyingTo === index} // Check if this comment is being replied to
-                setIsReplying={() =>
-                  setReplyingTo(replyingTo === index ? null : index)
-                } 
-                mutation={mutation}
-                user_email={user.email}
-              />
-            ))
-          )}
-        </div>
+      {/* Comments container with scrolling */}
+      <div className="scroll" ref={scrollRef}>
+        {comments.length === 0 ? (
+          <p>No comments available.</p>
+        ) : (
+          comments.map((comment, index) => (
+            <CommentItem
+              key={index}
+              comment={comment}
+              replyingTo={replyingTo}
+              setReplyingTo={setReplyingTo}
+              isReplying={replyingTo === index} // Check if this comment is being replied to
+              setIsReplying={() =>
+                setReplyingTo(replyingTo === index ? null : index)
+              } 
+              mutation={mutation}
+              user = {user}
+            />
+          ))
+        )}
       </div>
+    </div>
 
-      <div className="p-4">
-        {/* disable comment box and button if the user is not logged in */}
-        <form onSubmit={handleCommentSubmit} className={`${!user?.email ? "opacity-50" : ""}`}>
+    <div className="p-4">
+    <form onSubmit={handleCommentSubmit} className={`${!user?.email ? "opacity-50" : ""}`}>
           <textarea
-            className="w-[680px] h-32 p-4 border-2 border-gray-300 rounded-lg"
+            className={`w-[680px] h-32 p-4 border-2 border-gray-300 rounded-lg ${
+              user?.email ? "bg-white" : "bg-gray-500 cursor-not-allowed"
+            }`}
             rows="2"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Write your comment here..."
-            disabled={!user?.email} 
+            disabled={!user?.email}
           />
           <button
             type="submit"
-            className={`mt-4 px-4 py-2 text-white rounded-lg ${
-              user?.email ? "bg-sky-600" : "bg-gray-500 cursor-not-allowed"
-            }`}
-            disabled={!user?.email} 
+            className="mt-4 px-4 py-2 bg-sky-600 text-white rounded-lg"
+            disabled={!user?.email}
           >
             Submit Comment
           </button>
         </form>
-
-        {/* if the user is not logged in */}
         {!user?.email && (
           <p className="mt-5 text-lg font-semibold text-black">
             Please <button onClick={handleSignInSubmission} className="btn-ghost text-xl text-sky-600">Sign In</button> to comment.
@@ -163,20 +169,32 @@ const CommentsSection = ({ overSummaryId }) => {
   );
 };
 
-// Replies List Component
-const RepliesList = ({ replies }) => (
-  <div className="pl-4">
-    {replies.map((reply, index) => (
-      <div key={index} className="border-b border-gray-200 py-1">
-        <h5 className="font-bold">{reply.username}</h5>
-        <p>{reply.content}</p>
-      </div>
-    ))}
-  </div>
-);
+
+
+function timeAgo(date) {
+  const now = new Date();
+  const seconds = Math.floor((now - new Date(date)) / 1000);
+
+  let interval = Math.floor(seconds / 31536000);
+  if (interval >= 1) return interval + "y" ;
+
+  interval = Math.floor(seconds / 2592000);
+  if (interval >= 1) return interval + "mon"  ;
+
+  interval = Math.floor(seconds / 86400);
+  if (interval >= 1) return interval + "d"   ;
+
+  interval = Math.floor(seconds / 3600);
+  if (interval >= 1) return interval + "h"  ;
+
+  interval = Math.floor(seconds / 60);
+  if (interval >= 1) return interval + "m"  ;
+
+  return Math.floor(seconds) + "s"  ;
+}
 
 // CommentItem Component with Reply Box
-const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation, setIsReplying,user_email}) => {
+const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation, setIsReplying,user}) => {
 
   const [likes, setLikes] = useState(comment.likes);
   const [likedByUser, setLikedByUser] = useState(false);
@@ -192,15 +210,15 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
 
   useEffect(() => {
     if (comment.liked_by && Array.isArray(comment.liked_by)) {
-      setLikedByUser(comment.liked_by.includes(user_email));
+      setLikedByUser(comment.liked_by.includes(user?.email));
     }
-  }, [comment.liked_by, user_email]);
+  }, [comment.liked_by, user?.email]);
 
 
   const handleLikeToggle = async () => {
     try {
       const response = await axios.post(`http://127.0.0.1:8000/comments/like/${comment.id}/`,
-      {user_email: user_email});
+      {user_email: user?.email});
 
       setLikes(response.data.likes);
       setLikedByUser(!likedByUser); 
@@ -210,12 +228,13 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
   };
 
 
+
   return (
-    <div className="border-b border-gray-300 py-2">
-      <h4 className="text-base font-bold">
-        {comment.username}
-        <span className="ml-2 text-xs text-gray-600">
-          {new Date(comment.created_at).toLocaleString()}
+    <div className="border-b border-gray-300 px-2">
+      <h4 className="text-xs font-bold text-gray-700">
+         {comment.user.name}
+        <span className="ml-2 text-xs font-medium text-gray-600">
+          {timeAgo(comment.created_at)}
         </span>
       </h4>
       <div className="flex items-center justify-between gap-10">
@@ -231,7 +250,10 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
         </p>
         <div className="flex items-center space-x-4 mt-1">
 
-          <button className={`flex items-center text-base ${likedByUser ? 'text-blue-500' : 'text-slate-500'} hover:text-slate-700`} onClick={handleLikeToggle}>
+          <button className={`flex items-center text-base ${likedByUser ? 'text-blue-500' : 'text-slate-500'} hover:text-slate-700`} 
+          onClick={handleLikeToggle}
+          disabled={!user?.email}
+          >
             <AiFillLike />
             <span className="ml-1 text-slate-500">{likes}</span>
           </button>
@@ -239,25 +261,43 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
           <button
             className="text-blue-500 text-base font-semibold hover:text-sky-600"
             onClick={setIsReplying}
+            disabled={!user?.email}
           >
             <FaReplyAll />
           </button>
         </div>
       </div>
-
+      
+      <div className="pl-6">
       {comment.replies && comment.replies.length > 0 && (
-        <RepliesList replies={comment.replies} />
+        <ReplyList
+          replies={comment.replies}
+          setIsReplying={setIsReplying}
+          isReplying={isReplying}
+          replyingTo={replyingTo}
+          setReplyingTo={setReplyingTo}
+          mutation={mutation}
+          timeAgo={timeAgo}
+        />
       )}
+      </div>
 
-      {/* ReplySection component */}
-      <ReplySection
-        comment={comment}
-        isReplying={isReplying}
-        setIsReplying={setIsReplying}
-      />
+     
+       {isReplying && (
+        <ReplySection
+          commentId={comment.id}
+          setReplyingTo={setReplyingTo}
+          replyingTo={replyingTo}
+          isReplying={isReplying}
+          mutation={mutation}
+        />
+       )}
+
     </div>
+    
   );
 };
+
 
 
 
@@ -291,7 +331,7 @@ CommentItem.propTypes = {
   replyingTo: PropTypes.number,
   setReplyingTo: PropTypes.func.isRequired,
   mutation: PropTypes.func.isRequired,
-  user_email:PropTypes.string.isRequired,
+  user:PropTypes.object.isRequired,
 };
   
 
