@@ -3,6 +3,7 @@ import axios from 'axios';
 import Card from '../../Components/Card/Card';
 import Top_Comments from './Top_Comments';
 import Recent_Comments from './Recent_Comments';
+import NewsSection from '../../Components/NewsSection/NewsSection';
 
 
 const Home = () => {
@@ -68,11 +69,7 @@ const Home = () => {
                  </div>
             </div>
 
-            <div className='text-white p-2 mx-4 my-4'>
-                <p className='text-sm font-medium'>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta eius voluptates distinctio quo amet quos quae dolore reprehenderit
-                 consequuntur, nulla odio? Dignissimos cum officia nemo ipsum dolorum delectus modi earum ex doloribus consequatur quae inventore veniam, aliquidnostrum reiciendis, 
-                 quasi  quo eum tempora explicabo.</p>
-            </div>
+           <NewsSection></NewsSection>
         </div>
     </div>
 
