@@ -2,6 +2,11 @@ import { FaReplyAll } from "react-icons/fa6";
 import { AiFillLike } from "react-icons/ai";
 import ReplySection from "./ReplySection";
 import PropTypes from "prop-types";
+import { useState ,useEffect,useContext} from "react";
+import { AuthContext } from "../../Provider/AuthProvider";
+import axios from "axios";
+
+
 
 const ReplyList = ({ replies, setIsReplying, replyingTo, setReplyingTo, isReplying, mutation,timeAgo}) => {
     return (
@@ -24,6 +29,35 @@ const ReplyList = ({ replies, setIsReplying, replyingTo, setReplyingTo, isReplyi
   
   
 const ReplyItem = ({ reply, setIsReplying, replyingTo, setReplyingTo, isReplying, mutation,timeAgo}) => {
+  const { user } = useContext(AuthContext);
+  const [likes, setLikes] = useState(reply.likes);
+  const [likedByUser, setLikedByUser] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => setIsExpanded(!isExpanded);
+
+  const contentPreview = isExpanded
+    ? reply.content
+    : reply.content.split(" ").slice(0, 20).join(" ") + (reply.content.split(" ").length > 20 ? "..." : "");
+
+  
+  useEffect(() => {
+    if (reply.liked_by && Array.isArray(reply.liked_by)) {
+      setLikedByUser(reply.liked_by.includes(user.email));
+    }
+  }, [reply.liked_by, user.email]);
+
+  const handleLikeToggle = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/comments/like/${reply.id}/`,
+      {user_email: user.email});
+
+      setLikes(response.data.likes);
+      setLikedByUser(!likedByUser); 
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
 
 return (
     <div className="py-2">
@@ -36,18 +70,25 @@ return (
 
     <div className="flex items-center justify-between gap-10 py-1">
         <p className="text-base text-gray-900">
-        {reply.parent_user && reply.user && reply.parent_user.email !== reply.user.email && (
-            <span className="text-xs font-bold text-gray-700 mr-2">
-            @{reply.parent_user.name}
+          {reply.parent_user && reply.user && reply.parent_user.email !== reply.user.email && (
+              <span className="text-xs font-bold text-gray-700 mr-2">
+              @{reply.parent_user.name}
+              </span>
+          )}
+
+          {contentPreview}
+          {reply.content.split(" ").length > 20 && (
+            <span className="text-green-700 cursor-pointer ml-1 font-semibold text-sm" onClick={ toggleExpand}>
+              {isExpanded ? "See less" : "See more"}
             </span>
-        )}
-        {reply.content}
+          )}
         </p>
 
         <div className="flex items-center space-x-4 mt-1">
-        <button className="items-center text-slate-500 text-base hover:text-slate-700">
+        <button className={`flex items-center text-base ${likedByUser ? 'text-blue-500' : 'text-slate-500'} hover:text-slate-700`} onClick={handleLikeToggle}>
             <AiFillLike />
-        </button>
+            <span className="ml-1 text-slate-500">{likes}</span>
+          </button>
         <button
             className="text-blue-500 text-base font-semibold hover:text-sky-600"
             onClick={() => {
@@ -96,6 +137,8 @@ ReplyItem.propTypes = {
       user: PropTypes.object.isRequired,
       content: PropTypes.string.isRequired,
       created_at: PropTypes.string.isRequired,
+      likes :PropTypes.number.isRequired,
+      liked_by: PropTypes.arrayOf(PropTypes.string).isRequired,
       parent_user: PropTypes.object, // Updated to allow null or undefined
       replies: PropTypes.arrayOf(PropTypes.object), // Updated to allow empty arrays or undefined
     }).isRequired,

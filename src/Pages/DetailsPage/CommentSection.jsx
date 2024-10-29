@@ -121,7 +121,9 @@ const CommentsSection = ({ overSummaryId }) => {
                 isReplying={replyingTo === index} // Check if this comment is being replied to
                 setIsReplying={() =>
                   setReplyingTo(replyingTo === index ? null : index)
-                } // Toggle reply box
+                } 
+                mutation={mutation}
+                user_email={user.email}
               />
             ))
           )}
@@ -174,7 +176,40 @@ const RepliesList = ({ replies }) => (
 );
 
 // CommentItem Component with Reply Box
-const CommentItem = ({ comment, isReplying, setIsReplying }) => {
+const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation, setIsReplying,user_email}) => {
+
+  const [likes, setLikes] = useState(comment.likes);
+  const [likedByUser, setLikedByUser] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => setIsExpanded(!isExpanded);
+
+  const contentPreview = isExpanded
+    ? comment.content
+    : comment.content.split(" ").slice(0, 20).join(" ") + (comment.content.split(" ").length > 20 ? "..." : "");
+
+  
+
+  useEffect(() => {
+    if (comment.liked_by && Array.isArray(comment.liked_by)) {
+      setLikedByUser(comment.liked_by.includes(user_email));
+    }
+  }, [comment.liked_by, user_email]);
+
+
+  const handleLikeToggle = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/comments/like/${comment.id}/`,
+      {user_email: user_email});
+
+      setLikes(response.data.likes);
+      setLikedByUser(!likedByUser); 
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
+
   return (
     <div className="border-b border-gray-300 py-2">
       <h4 className="text-base font-bold">
@@ -184,13 +219,23 @@ const CommentItem = ({ comment, isReplying, setIsReplying }) => {
         </span>
       </h4>
       <div className="flex items-center justify-between gap-10">
-        <p className="text-lg font-medium py-2 border-gray-200">
-          {comment.content}
+      <p
+          className="flex-1 text-base text-gray-900 font-medium py-1 border-gray-200 cursor-pointer"
+         >
+          {contentPreview}
+          {comment.content.split(" ").length > 20 && (
+            <span className="text-green-700 cursor-pointer ml-1 font-semibold text-sm" onClick={ toggleExpand}>
+              {isExpanded ? "See less" : "See more"}
+            </span>
+          )}
         </p>
         <div className="flex items-center space-x-4 mt-1">
-          <button className="items-center text-slate-500 text-base hover:text-slate-700">
+
+          <button className={`flex items-center text-base ${likedByUser ? 'text-blue-500' : 'text-slate-500'} hover:text-slate-700`} onClick={handleLikeToggle}>
             <AiFillLike />
+            <span className="ml-1 text-slate-500">{likes}</span>
           </button>
+
           <button
             className="text-blue-500 text-base font-semibold hover:text-sky-600"
             onClick={setIsReplying}
@@ -214,4 +259,45 @@ const CommentItem = ({ comment, isReplying, setIsReplying }) => {
   );
 };
 
+
+
+
+CommentItem.propTypes = {
+  comment: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    user: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+    }).isRequired,
+    content: PropTypes.string.isRequired,
+    created_at: PropTypes.string.isRequired,
+    likes :PropTypes.number.isRequired,
+    liked_by: PropTypes.arrayOf(PropTypes.string).isRequired,
+    replies: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        user: PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          email: PropTypes.string.isRequired,
+        }),
+        content: PropTypes.string.isRequired,
+        created_at: PropTypes.string.isRequired,
+      })
+    ),
+  }).isRequired,
+  
+  isReplying: PropTypes.bool.isRequired,
+  setIsReplying: PropTypes.func.isRequired,
+  replyingTo: PropTypes.number,
+  setReplyingTo: PropTypes.func.isRequired,
+  mutation: PropTypes.func.isRequired,
+  user_email:PropTypes.string.isRequired,
+};
+  
+
+CommentsSection.propTypes = {
+  overSummaryId :PropTypes.number.isRequired,
+};
+
+  
 export default CommentsSection;

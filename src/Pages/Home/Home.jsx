@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Card from '../../Components/Card/Card';
+import Top_Comments from './Top_Comments';
+import Recent_Comments from './Recent_Comments';
 import NewsSection from '../../Components/NewsSection/NewsSection';
 
 
@@ -41,6 +43,36 @@ const Home = () => {
                 </div>
             ))}
         </div>
+
+        <div className="flex justify-center items-center">
+        <div className="w-2/3 mt-12 px-10 grid grid-cols-2 gap-10">
+            {/* Top Comments Section */}
+            <div className="w-full ">
+                <Top_Comments />
+            </div>
+
+            {/* Top Comments Section */}
+            <div className="w-full">
+                <Recent_Comments/>
+            </div>
+        </div>
+        </div>
+       
+
+        <div className="flex justify-center items-center">
+        <div className="w-2/3 mt-12 px-10 grid grid-cols-2 gap-10">
+            {/* Top Comments Section */}
+            <div className="w-full ">
+                <Top_Comments />
+            </div>
+
+            {/* Top Comments Section */}
+            <div className="w-full">
+                <Recent_Comments/>
+            </div>
+        </div>
+        </div>
+       
 
          {/* home news section */}
         <NewsSection></NewsSection>

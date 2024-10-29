@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 const Card = ({card}) => {
-
+    const over_num = null;
     const {match_id,team1,match_description, team2, status, venue,series_name}=card;
     return (
        <Link to={`/details/${match_id}`}>
