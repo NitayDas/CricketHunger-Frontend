@@ -60,17 +60,10 @@ const Home = () => {
        
 
          {/* home news section */}
-         <div className="new-div bg-sky-500 text-white p-4 mb-4 mt-10 mr-5 rounded-lg">
-            {/* <div className='text-white p-2 mx-4 my-4'>
-                <div className='flex '>
-                <p className='text-sm font-medium'>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta eius voluptates distinctio quo amet quos quae dolore reprehenderit
-                 consequuntur, nulla odio? Dignissimos cum officia nemo ipsum dolorum delectus modi earum ex doloribus consequatur quae inventore veniam, aliquidnostrum reiciendis, 
-                 quasi  quo eum tempora explicabo.</p>
-                 </div>
-            </div> */}
+     
 
            <NewsSection></NewsSection>
-        </div>
+       
     </div>
 
         
