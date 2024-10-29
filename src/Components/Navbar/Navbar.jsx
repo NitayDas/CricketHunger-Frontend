@@ -36,18 +36,10 @@ const navOptions = <>
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
       </div>
       <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-        <li><a>Item 1</a></li>
-        <li>
-          <a>Parent</a>
-          <ul className="p-2">
-            <li><a>Submenu 1</a></li>
-            <li><a>Submenu 2</a></li>
-          </ul>
-        </li>
-        <li><a>Item 3</a></li>
+      {navOptions}
       </ul>
     </div>
-    <a className="text-3xl font-bold text-with-gradient">Crickie Hunger</a>
+    <a className="text-2xl font-bold text-with-gradient lg:text-3xl">Crickie Hunger</a>
   </div>
   <div className="navbar-center hidden   lg:flex  ">
   <ul className='menu font-semibold text-lg menu-horizontal px-1'>
@@ -55,17 +47,16 @@ const navOptions = <>
   </ul>
   </div>
   <div className="navbar-end">
-  <ul className="menu font-semibold text-base menu-horizontal px-1">
+  <ul className="hidden font-semibold lg:flex menu-horizontal px-1 gap-3">
   {navOptions}
-   
-    </ul>
+        </ul>
    <ul>
    {
     user ? <>
         {/* <span>{user?.displayName}</span> */}
-        <button onClick={handleLogOut} className="h-10 btn gard-bg ">Sign Out</button>
+        <button onClick={handleLogOut} className="h-10 btn gard-bg ml-3 ">Sign Out</button>
     </> : <>
-        <li><Link to="/signin"><button className='h-10 btn  gard-bg'>Sign In</button></Link></li>
+        <li><Link to="/signin"><button className='h-10 btn  gard-bg ml-3'>Sign In</button></Link></li>
     </>
 }
    </ul>

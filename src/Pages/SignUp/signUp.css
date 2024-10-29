@@ -2,3 +2,18 @@
     background: linear-gradient(to bottom, #06b6d4, #6ee7b7);
     color: white; /* Ensures the text color is visible on gradient */
 }
+
+/* Restrict the max width of the form and ensure consistent padding */
+.card {
+    max-width: 400px; /* Set a fixed max-width for the form */
+    width: 100%;
+    padding: 20px;
+  }
+  
+  /* Ensure the error text wraps and doesn't increase the form width */
+  .text-red-500 {
+    word-wrap: break-word;
+    white-space: normal;
+    font-size: 0.875rem; /* Ensure the error font size is small */
+  }
+  

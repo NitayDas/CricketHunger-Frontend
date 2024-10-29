@@ -19,6 +19,7 @@ import Matches from './Pages/Matches/Matches.jsx';
 // import { Authprovider } from './Pages/Authentication/Authprovider.jsx';
 import Series from './Pages/Series/Series.jsx';
 import SeriesMatches from './Pages/Series/SeriesMatches.jsx';
+import NewsDetails from './Components/NewsSection/NewsDetails.jsx';
 
 
 
@@ -66,6 +67,12 @@ const router = createBrowserRouter([
         {
           path: "signup/",
           element:<SignUp></SignUp>,
+        },
+
+        {
+          path: "/news/:id",
+          element: <NewsDetails></NewsDetails>,
+          
         },
       
     ],

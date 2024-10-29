@@ -57,8 +57,7 @@ const MatchesContainer = ({cards}) => {
                         </TabList>
                         <TabPanel>
                             <div className='grid grid-cols-3 gap-5 ' >
-                            {/* <TabList>
-                            <Tab>Live</Tab>
+                            {/* <TabList>                            <Tab>Live</Tab>
                             <Tab>Recent</Tab>
                             <Tab>Upcoming</Tab>
                         </TabList> */}
