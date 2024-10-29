@@ -85,7 +85,10 @@ return (
         </p>
 
         <div className="flex items-center space-x-4 mt-1">
-        <button className={`flex items-center text-base ${likedByUser ? 'text-blue-500' : 'text-slate-500'} hover:text-slate-700`} onClick={handleLikeToggle}>
+        <button className={`flex items-center text-base ${likedByUser ? 'text-blue-500' : 'text-slate-500'} hover:text-slate-700`}
+         onClick={handleLikeToggle}
+         disabled={!user?.email}
+         >
             <AiFillLike />
             <span className="ml-1 text-slate-500">{likes}</span>
           </button>
@@ -95,6 +98,7 @@ return (
             setIsReplying(isReplying === reply.id ? false : reply.id);
             setReplyingTo(replyingTo === reply.id ? null : reply.id);
             }}
+            disabled={!user?.email}
         >
             <FaReplyAll />
         </button>
