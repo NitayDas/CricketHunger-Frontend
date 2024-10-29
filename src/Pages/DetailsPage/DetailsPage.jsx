@@ -7,14 +7,12 @@ import "slick-carousel/slick/slick-theme.css";
 import "./details.css";
 import CommentsSection from "./CommentSection";
 
-const useQuery = () => {
-    return new URLSearchParams(useLocation().search);
-};
-
 const DetailsPage = () => {
     const { match_id } = useParams();
-    const query = useQuery();
-    const over_num = query.get('over_num');
+    const location = useLocation();
+    const { over_num, InningsId } = location.state || {};
+    console.log(over_num);
+    console.log(InningsId);
     const [overSummary, setOverSummary] = useState([]);
     const [scoreboard1, setScoreboard1] = useState([]);
     const [scoreboard2, setScoreboard2] = useState([]);
@@ -32,7 +30,7 @@ const DetailsPage = () => {
     useEffect(() => {
         const fetchMatchData = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/matchDetails/${match_id}/`);
+                const response = await axios.get(`http://127.0.0.1:8000/matchDetails/${match_id}/`,{innings_id : InningsId});
                 const { scoreboard, oversummary, match_info } = response.data;
                 const [match_status, series_name] = match_info.split(' --- ');
                 SetStatus(match_status);
@@ -62,7 +60,7 @@ const DetailsPage = () => {
         };
 
         fetchMatchData();
-    }, [match_id]);
+    }, [match_id,InningsId]);
 
     if (error) {
         return <div>{error}</div>;

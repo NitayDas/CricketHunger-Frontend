@@ -41,10 +41,16 @@ const CommentItemSimple = ({ comment }) => {
 
     const handleRedirect = () => {
         const matchId = comment.match_id; 
-        const over_num = comment.over_num; 
+        const over_num = comment.over_num;
+        const InningsId = comment.InningsId;
 
         if (matchId && over_num) {
-            navigate(`/details/${matchId}?over_num=${over_num}`);
+            navigate(`/details/${matchId}`,{
+            state: {
+                over_num: over_num,
+                InningsId: InningsId
+            }
+        });
         } else {
             console.error('Required IDs not found for navigation');
         }
@@ -93,6 +99,7 @@ const CommentItemSimple = ({ comment }) => {
       likes: PropTypes.number.isRequired,
       match_id: PropTypes.string, 
       over_num: PropTypes.number, 
+      InningsId : PropTypes.number,
     }).isRequired,
 };
 
