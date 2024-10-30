@@ -5,7 +5,7 @@ const Card = ({card}) => {
     const {match_id,team1,match_description, team2, status, venue,series_name}=card;
     return (
        <Link to={`/details/${match_id}`}>
-        <div className=' w-80 h-40 bg-white shadow-lg border-2 p-2 m-3 rounded-lg'>
+        <div className=' w-72  h-40 bg-white shadow-lg border-2 p-2 m-3 rounded-lg md:w-80 lg:w-80'>
             <div className="space-y-2">
                 <div className="flex">
                     <h1 className="text-xs mr-1 font-semibold whitespace-nowrap overflow-hidden">{match_description}<span className="font-semibold">.</span></h1>

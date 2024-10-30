@@ -128,9 +128,9 @@ const DetailsPage = () => {
 
     
     return (
-        <div className='mt-24 px-12 '>
-            <div className='mt-24 px-12'>
-                <div className='card w-[480px] h-[220px] bg-white shadow-lg border-2 p-2 m-3 rounded-lg'>
+        <div className='mt-8 lg:mt-24 lg:px-12 '>
+            <div className='w-full flex justify-center lg:mt-24 lg:px-12'>
+                <div className='card w-60 bg-white shadow-lg border-2 h-auto rounded-lg md:w-72 lg:w-72'>
                     <div className="space-y-2 p-2">
                         <div className="flex mb-3">
                             <h1 className="text-sm text-slate-700 whitespace-nowrap overflow-hidden">{series_name}</h1>
@@ -169,7 +169,7 @@ const DetailsPage = () => {
             </div>
 
             {/* Search OverSummary by ID */}
-            <div className="mt-24 ml-4 p-1 ">
+            <div className="mt-8 mb-4 lg:mt-24  ">
                 <input
                     type="text"
                     value={searchOver}
@@ -177,25 +177,25 @@ const DetailsPage = () => {
                     placeholder="Enter Over"
                     className="p-3 border rounded-xl text-center font-semibold"
                 />
-                <button onClick={handleSearch} className="ml-1 p-3 bg-gradient-to-r from-blue-600 to-purple-500 text-white rounded-xl">Search</button>
+                <button onClick={handleSearch} className="ml-1 p-3 btn grad-bg text-black rounded-xl">Search</button>
             </div>
 
 
         {/*slider*/}
         <div className="relative justify-center bg-white p-2 mb-12 h-18 rounded-full drop-shadow-lg flex items-center"> 
-            <div className="absolute -left-2 h-16 w-32 flex items-center justify-center bg-green-600 rounded-full text-white text-xl font-semibold">
+            <div className="absolute hidden -left-2 h-16 w-32 md:flex items-center justify-center bg-green-600 rounded-full text-white text-xl font-semibold">
                Over: {latestOverNum}
             </div>
 
             <div className='w-full'>
-                <Slider className='ml-44 drop-shadow-2xl h-16' ref={sliderRef} {...settings}>
+                <Slider className='drop-shadow-2xl h-12 lg:h-16 lg:ml-44' ref={sliderRef} {...settings}>
                     {Object.keys(overSummary).map((overNum, index) => {
                         const displayOverNum = overNum.endsWith(".6") 
                         ? Math.ceil(parseFloat(overNum)) 
                         : overNum;
                         return(
                         <div key={index} onClick={() => handleOverClick(overNum)} className='cursor-pointer'>
-                            <h3 className={`${ selectedOver == overNum ?  'bg-green-400 h-16 w-16'  : 'bg-white drop-shadow-lg h-16 w-16'}  text-black font-semibold text-lg text-center rounded-full my-1 mx-4 flex items-center justify-center`}>
+                            <h3 className={`${ selectedOver == overNum ?  'bg-green-400 h-12 w-12 md:w-16 md:h-16 lg:h-16 lg:w-16'  : 'bg-white drop-shadow-lg h-12 w-12 md:w-16 md:h-16 lg:h-16 lg:w-16'}  text-black font-semibold text-lg text-center rounded-full my-1 mx-4 flex items-center justify-center`}>
                                  {displayOverNum}
                             </h3>
                         </div>

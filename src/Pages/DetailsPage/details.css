@@ -144,3 +144,14 @@
     color: rgb(23, 14, 76); /* Change color on hover if needed */
     font-size : 30px;
 }
+.gard-bg {
+    background: linear-gradient(#06b6d4, #6ee7b7);
+    border: none;
+    color: white;
+   
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s ease; /* Smooth transition for hover effect */
+    outline: none; /* Remove outline for most browsers */
+}

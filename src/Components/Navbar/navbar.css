@@ -2,7 +2,7 @@
     /* Create a gradient text effect */
     background: linear-gradient(#06b6d4, #6ee7b7);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; /* Hide the original text color */
+    -webkit-text-fill-color: transparent; 
   }
   .gard-bg {
     background: linear-gradient(#06b6d4, #6ee7b7);
@@ -12,8 +12,7 @@
     font-size: 16px;
     border-radius: 10px;
     cursor: pointer;
-    transition: opacity 0.2s ease; /* Smooth transition for hover effect */
-    outline: none; /* Remove outline for most browsers */
+    transition: opacity 0.2s ease; 
 }
 
 .gard-bg:hover {

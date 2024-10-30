@@ -40,7 +40,7 @@ const MatchesContainer = ({cards}) => {
     };
 
     return (
-        <div className='my-16 py-10 px-10 gap-5 mx-24 bg-sky-50 rounded-2xl' >
+        <div className='w-full my-16 p-5 gap-5 mx-auto bg-sky-50 rounded-2xl lg:w-11/12 ' >
             <h2 className='text-2xl font-semibold pb-5'>Matches</h2>
             <Tabs  selectedIndex={selectedTab} onSelect={index => setSelectedTab(index)}>
                 <TabList>
@@ -56,7 +56,8 @@ const MatchesContainer = ({cards}) => {
                             <Tab>Upcoming</Tab>
                         </TabList>
                         <TabPanel>
-                            <div className='grid grid-cols-3 gap-5 ' >
+                           <div className='flex justify-center'>
+                           <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8' >
                             {/* <TabList>                            <Tab>Live</Tab>
                             <Tab>Recent</Tab>
                             <Tab>Upcoming</Tab>
@@ -65,9 +66,11 @@ const MatchesContainer = ({cards}) => {
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                           </div>
                         </TabPanel>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5 '>
+                        <div className='flex justify-center'>
+                        <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8'>
                             {/* <TabList>
                             <Tab>Live</Tab>
                             <Tab>Recent</Tab>
@@ -77,9 +80,11 @@ const MatchesContainer = ({cards}) => {
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                        </div>
                         </TabPanel>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5'>
+                           <div className='flex justify-center'>
+                           <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8'>
                             {/* <TabList>
                             <Tab>Live</Tab>
                             <Tab>Recent</Tab>
@@ -89,6 +94,7 @@ const MatchesContainer = ({cards}) => {
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                           </div>
                         </TabPanel>
                     </Tabs>
                 </TabPanel>
@@ -100,25 +106,31 @@ const MatchesContainer = ({cards}) => {
                             <Tab>Upcoming</Tab>
                         </TabList>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5 '>
+                          <div className='flex justify-center'>
+                          <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8'>
                                 {filteredCards().map(card => (
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                          </div>
                         </TabPanel>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5 '>
+                        <div className='flex justify-center'>
+                        <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8'>
                                 {filteredCards().map(card => (
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                        </div>
                         </TabPanel>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5 '>
+                          <div className='flex justify-center'>
+                          <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8 '>
                                 {filteredCards().map(card => (
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                          </div>
                         </TabPanel>
                     </Tabs>
                 </TabPanel>
@@ -132,25 +144,31 @@ const MatchesContainer = ({cards}) => {
                             <Tab>Upcoming</Tab>
                         </TabList>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5 '>
+                           <div className='flex justify-center'>
+                           <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8'>
                                 {filteredCards().map(card => (
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                           </div>
                         </TabPanel>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5 '>
+                         <div className='flex justify-center'>
+                         <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8'>
                                 {filteredCards().map(card => (
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                         </div>
                         </TabPanel>
                         <TabPanel>
-                            <div className=' grid grid-cols-3 gap-5 '>
+                         <div className='flex justify-center'>
+                         <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-8'>
                                 {filteredCards().map(card => (
                                     <Card key={card.id} card={card} />
                                 ))}
                             </div>
+                         </div>
                         </TabPanel>
                     </Tabs>
                 </TabPanel>

@@ -109,25 +109,30 @@ const CommentsSection = ({ overSummaryId }) => {
 }
 
 return (
-  <div className="flex p-4 bg-white rounded-2xl h-auto shadow-md">
-    <div className="w-1/2 p-4">
+  <div className="w-full flex flex-col p-4 bg-white rounded-2xl h-auto shadow-md md:flex-row md:gap-8 lg:flex-row">
+    <div className="lg:w-1/2 p-4">
       {isLoading && <p>Loading comments...</p>}
       {isError && <p>Error loading comments!</p>}
 
-      <p className="text-2xl font-semibold underline pb-3 mb-3">Comments</p>
+      <p className="text-xl font-semibold underline pb-3 mb-3 md:text-2xl">Comments</p>
 
       {/* Comments container with scrolling */}
-      <div className="scroll" ref={scrollRef}>
-        {comments.length === 0 ? (
-          <p>No comments available.</p>
-        ) : (
+      <div
+            className={`${
+                comments.length === 0 ? "min-h-[80px]" : "min-h-[300px] max-h-[500px] overflow-y-auto"
+            }`}
+            ref={scrollRef}
+        >
+            {comments.length === 0 ? (
+                <p>No comments available.</p>
+            )  : (
           comments.map((comment, index) => (
             <CommentItem
               key={index}
               comment={comment}
               replyingTo={replyingTo}
               setReplyingTo={setReplyingTo}
-              isReplying={replyingTo === index} // Check if this comment is being replied to
+              isReplying={replyingTo === index} 
               setIsReplying={() =>
                 setReplyingTo(replyingTo === index ? null : index)
               } 
@@ -139,10 +144,10 @@ return (
       </div>
     </div>
 
-    <div className="p-4">
-    <form onSubmit={handleCommentSubmit} className={`${!user?.email ? "opacity-50" : ""}`}>
+    <div className="p-4 lg:w-1/2">
+    <form onSubmit={handleCommentSubmit} className={`${!user?.email ? "opacity-30" : ""}`}>
           <textarea
-            className={`w-[680px] h-32 p-4 border-2 border-gray-300 rounded-lg ${
+            className={`w-full h-32 p-4 border-2 border-gray-300 rounded-lg ${
               user?.email ? "bg-white" : "bg-gray-500 cursor-not-allowed"
             }`}
             rows="2"
