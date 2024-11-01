@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Card from '../Card/Card';
+import './tabs.css'
 
 const MatchesContainer = ({cards}) => {
     const [selectedTab, setSelectedTab] = useState(0);
@@ -40,7 +41,7 @@ const MatchesContainer = ({cards}) => {
     };
 
     return (
-        <div className='w-full my-16 p-5 gap-5 mx-auto bg-sky-50 rounded-2xl lg:w-11/12 ' >
+        <div className='w-full my-16 p-5 gap-5 mx-auto bg-white rounded-2xl lg:w-11/12 ' >
             <h2 className='text-2xl font-semibold pb-5'>Matches</h2>
             <Tabs  selectedIndex={selectedTab} onSelect={index => setSelectedTab(index)}>
                 <TabList>
