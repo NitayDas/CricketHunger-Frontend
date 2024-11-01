@@ -10,6 +10,7 @@ const SignIn = () => {
     const navigate = useNavigate();  
     const { signIn } = useContext(AuthContext);  
     const [passwordVisible, setPasswordVisible] = useState(false); 
+    const [password, setPassword] = useState(""); // State for password
     const from = location.state?.from?.pathname || "/";
     console.log('state in the location login page', location.state)
 
@@ -18,7 +19,7 @@ const SignIn = () => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
-        const password = form.password.value;
+        
         console.log(email, password);
         
         signIn(email, password)
@@ -38,6 +39,11 @@ const SignIn = () => {
                 });
                 console.error('Sign in error:', error.message);
               });
+    };
+
+    // Handle password change
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
     };
 
     // Toggle password visibility
@@ -61,27 +67,27 @@ const SignIn = () => {
                                 <input type="email" placeholder="email" name="email" className="input input-bordered" required />
                             </div>
                             <div className="form-control relative">
-    <label className="label">
-        <span className="label-text text-base font-semibold">Password</span>
-    </label>
-    <input
-        type={passwordVisible ? "text" : "password"} 
-        placeholder="password"
-        className="input input-bordered"
-        name="password"
-        value={password}
-        onChange={handlePasswordChange}
-        required
-    />
-    {/* Eye icon for password visibility */}
-    <button
-        type="button"
-        onClick={togglePasswordVisibility}
-        className="absolute right-3 top-2/3 transform -translate-y-1/2"
-    >
-        {passwordVisible ? <FaEye /> : <FaEyeSlash />}
-    </button>
-</div>
+                                <label className="label">
+                                    <span className="label-text text-base font-semibold">Password</span>
+                                </label>
+                                <input
+                                    type={passwordVisible ? "text" : "password"} 
+                                    placeholder="password"
+                                    className="input input-bordered"
+                                    name="password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    required
+                                />
+                                {/* Eye icon for password visibility */}
+                                <button
+                                    type="button"
+                                    onClick={togglePasswordVisibility}
+                                    className="absolute right-3 top-2/3 transform -translate-y-1/2"
+                                >
+                                    {passwordVisible ? <FaEye /> : <FaEyeSlash />}
+                                </button>
+                            </div>
                             <div className="form-control mt-6">
                                 <button className="grad-button btn text-xl text-white">Sign In</button>
                             </div>
