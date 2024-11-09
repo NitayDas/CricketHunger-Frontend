@@ -21,7 +21,7 @@ const SeriesMatches = () => {
     }, [seriesId]);
 
     return (
-        <div className="bg-gray-100 p-8 rounded-lg">
+        <div className="bg-gray-100 p-8 rounded-lg mt-12">
         <ul className="space-y-4">
             {matches.map(match => (
                 <li key={match.match_id} className="border border-slate-300 rounded-lg p-4">

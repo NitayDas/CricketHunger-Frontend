@@ -72,7 +72,6 @@ const router = createBrowserRouter([
         {
           path: "/news/:id",
           element: <NewsDetails></NewsDetails>,
-          
         },
       
     ],

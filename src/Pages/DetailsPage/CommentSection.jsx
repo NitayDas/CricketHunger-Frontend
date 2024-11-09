@@ -193,21 +193,31 @@ function timeAgo(date) {
   return Math.floor(seconds) + "s"  ;
 }
 
+const countReplies = (comment) => {
+  if (!comment.replies || comment.replies.length === 0) {
+    return 0;
+  }
+  return comment.replies.length + comment.replies.reduce((acc, reply) => acc + countReplies(reply), 0);
+};
+
 // CommentItem Component with Reply Box
 const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation, setIsReplying,user}) => {
 
   const [likes, setLikes] = useState(comment.likes);
   const [likedByUser, setLikedByUser] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isRepliesVisible, setIsRepliesVisible] = useState(false);
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
+  const toggleReplies = () => setIsRepliesVisible(!isRepliesVisible);
 
   const contentPreview = isExpanded
     ? comment.content
     : comment.content.split(" ").slice(0, 20).join(" ") + (comment.content.split(" ").length > 20 ? "..." : "");
 
-  
+  const repliesCount = countReplies(comment);
 
+  
   useEffect(() => {
     if (comment.liked_by && Array.isArray(comment.liked_by)) {
       setLikedByUser(comment.liked_by.includes(user?.email));
@@ -270,6 +280,27 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
       
       <div className="pl-6">
       {comment.replies && comment.replies.length > 0 && (
+          <>
+            {isRepliesVisible && (
+              <ReplyList
+                replies={comment.replies}
+                setIsReplying={setIsReplying}
+                isReplying={isReplying}
+                replyingTo={replyingTo}
+                setReplyingTo={setReplyingTo}
+                mutation={mutation}
+                timeAgo={timeAgo}
+              />
+            )}
+            <button
+              className="text-sm text-blue-500 hover:text-blue-600 -ml-6"
+              onClick={toggleReplies}
+            >
+              {isRepliesVisible ? "Hide replies" : `View ${repliesCount} more replies`}
+            </button>
+          </>
+        )}
+      {/* {comment.replies && comment.replies.length > 0 && (
         <ReplyList
           replies={comment.replies}
           setIsReplying={setIsReplying}
@@ -279,7 +310,7 @@ const CommentItem = ({ comment, isReplying, replyingTo, setReplyingTo, mutation,
           mutation={mutation}
           timeAgo={timeAgo}
         />
-      )}
+      )} */}
       </div>
 
      

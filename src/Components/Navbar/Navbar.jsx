@@ -47,7 +47,7 @@ const navOptions = <>
   </ul>
   </div>
   <div className="navbar-end">
-  <ul className="hidden font-semibold lg:flex menu-horizontal px-1 gap-3">
+  <ul className="hidden font-semibold lg:flex menu-horizontal px-1 gap-3 ">
   {navOptions}
         </ul>
    <ul>

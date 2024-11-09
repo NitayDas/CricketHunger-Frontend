@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./details.css";
 import CommentsSection from "./CommentSection";
+import ScoreboardItem from './ScoreboardItem';
 
 const DetailsPage = () => {
     const { match_id } = useParams();
@@ -38,15 +39,19 @@ const DetailsPage = () => {
                 console.log(match_status);
                 console.log(series_name);
 
-                const sortedSummary = oversummary.sort((a, b) => a.OverNum - b.OverNum);
+                const sortedSummary = oversummary.sort((a, b) => {
+                    return a.OverNum - b.OverNum; // No need to parse, as OverNum is already a float
+                });
+                
                 const groupedSummary = sortedSummary.reduce((acc, item) => {
-                    if (!acc[item.OverNum]) {
-                        acc[item.OverNum] = [];
+                    const overNumKey = item.OverNum.toFixed(1); // Use toFixed(1) to handle float precision
+                    if (!acc[overNumKey]) {
+                        acc[overNumKey] = [];
                     }
-                    acc[item.OverNum].push(item);
+                    acc[overNumKey].push(item);
                     return acc;
                 }, {});
-
+                
                 setOverSummary(groupedSummary);
 
                 setScoreboard1(scoreboard.filter((item) => item.inningsId === "1"));
@@ -66,15 +71,18 @@ const DetailsPage = () => {
         return <div>{error}</div>;
     }
 
+    const allScoreboards = [...scoreboard1, ...scoreboard2, ...scoreboard3, ...scoreboard4];
+
 
     //Slider part
     const latestOverNum = Object.keys(overSummary).length > 0 
     ? Math.max(...Object.keys(overSummary).map(Number)) 
     : "0";
-    console.log(latestOverNum);
-    const OverNum = over_num? over_num : latestOverNum;
+   
+    const overnum = over_num ? over_num : latestOverNum;
+    console.log(overnum)
 
-    const OverIndex =  Object.keys(overSummary).indexOf(OverNum.toString());
+    const OverIndex =  Object.keys(overSummary).indexOf(overnum.toString());
 
     console.log(OverIndex);
 
@@ -85,9 +93,9 @@ const DetailsPage = () => {
         }
 
         if (Object.keys(overSummary).length > 0) {
-            setSelectedOver(OverNum);
+            setSelectedOver(overnum);
         }
-    }, [overSummary,OverIndex,OverNum]);
+    },[overSummary,OverIndex,overnum]);
 
     
     //search handle
@@ -113,7 +121,7 @@ const DetailsPage = () => {
         speed: 400,
         slidesToShow: slidesToShow,
         slidesToScroll: 6,
-        // initialSlide : 400,
+        //initialSlide : 400,
         afterChange: (index) => {
             const overNums = Object.keys(overSummary);
             const selectedIdx = Math.min(index, overNums.length - 1);
@@ -136,32 +144,12 @@ const DetailsPage = () => {
                             <h1 className="text-sm text-slate-700 whitespace-nowrap overflow-hidden">{series_name}</h1>
                         </div>
                         <div className='space-y-2 '>
-                            {scoreboard1.map((item, index) => (
-                                <div className='flex gap-8 items-center text-slate-700 ' key={index}>
-                                    <h2 className='text-sm font-bold'>{item.bat_team}</h2>
-                                    <h2 className='text-sm  font-bold'>{item.score}/{item.wickets}<span className='ml-4'>({item.overs})</span></h2>
-                                </div>
-                            ))}
-                            {scoreboard2.map((item, index) => (
-                                <div className='flex gap-8 items-center text-slate-700 ' key={index}>
-                                    <h2 className='text-sm  font-bold'>{item.bat_team}</h2>
-                                    <h2 className='text-sm  font-bold'>{item.score}/{item.wickets}<span className='ml-4'>({item.overs})</span></h2>
-                                </div>
-                            ))}
 
-                            {scoreboard3.map((item, index) => (
-                                <div className='flex gap-8 items-center text-slate-700' key={index}>
-                                    <h2 className='text-sm  font-bold'>{item.bat_team}</h2>
-                                    <h2 className='text-sm  font-bold'>{item.score}-{item.wickets}<span className='ml-4'>({item.overs})</span></h2>
-                                </div>
-                            ))}
-
-                          {scoreboard4.map((item, index) => (
-                                <div className='flex gap-8 items-center text-slate-700' key={index}>
-                                    <h2 className='text-sm font-bold'>{item.bat_team}</h2>
-                                    <h2 className='text-sm  font-bold'>{item.score}/{item.wickets}<span className='ml-4'>({item.overs})</span></h2>
-                                </div>
-                            ))}
+                        {
+                        allScoreboards.map((item, index) => (
+                        <ScoreboardItem key={index} item={item} />
+                        ))}
+                        
                          <p className='text-sm text-slate-650'>{status}</p>
                         </div>
                     </div>
@@ -189,18 +177,13 @@ const DetailsPage = () => {
 
             <div className='w-full'>
                 <Slider className='ml-44 drop-shadow-2xl h-16' ref={sliderRef} {...settings}>
-                    {Object.keys(overSummary).map((overNum, index) => {
-                        const displayOverNum = overNum.endsWith(".6") 
-                        ? Math.ceil(parseFloat(overNum)) 
-                        : overNum;
-                        return(
+                    {Object.keys(overSummary).map((overNum, index) => (
                         <div key={index} onClick={() => handleOverClick(overNum)} className='cursor-pointer'>
                             <h3 className={`${ selectedOver == overNum ?  'bg-green-400 h-16 w-16'  : 'bg-white drop-shadow-lg h-16 w-16'}  text-black font-semibold text-lg text-center rounded-full my-1 mx-4 flex items-center justify-center`}>
-                                 {displayOverNum}
+                                 {overNum}
                             </h3>
                         </div>
-                        );
-                    })}
+                    ))}
                 </Slider>
             </div>
             </div>
