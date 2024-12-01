@@ -1,0 +1,36 @@
+/* Style the tab list to remove default styles */
+.react-tabs__tab-list {
+    display: flex;
+    border-bottom: none;
+    margin-bottom: 10px;
+}
+
+/* General tab style */
+.react-tabs__tab {
+    font-size: 1.5rem;
+    padding: 5px 10px;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 0 8px;
+    border: none;
+    background: none;
+    outline: none;
+    box-shadow: none;
+    transition: none; 
+    color: rgb(107 114 128);
+}
+
+/* Style for the active tab with black underline */
+.react-tabs__tab--selected {
+    text-decoration: underline;
+    color: black;
+    font-weight: 600;
+    background: none;
+    box-shadow: none;
+    transition: none; /* Ensure no delay in applying style */
+}
+
+/* Optional: Hover effect for tabs */
+.react-tabs__tab:hover {
+    color: rgb(31 41 55);
+}

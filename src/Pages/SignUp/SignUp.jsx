@@ -91,13 +91,13 @@ const SignUp = () => {
 
   return (
     <div>
-      <div className="w-full text-center mt-14 mb-10 ">
+      <div className="w-full text-center my-8 lg:mt-14 lg:mb-10 ">
         <div className="text-center lg:text-left">
           {/* <h1 className="text-2xl font-bold text-center text-white lg:text-4xl py-5 mb-5">Sign Up</h1> */}
         </div>
         <div className="flex justify-center items-center w-full">
           <div className="card flex-shrink-0 bg-white drop-shadow-2xl rounded-xl shadow-2xl px-5">
-            <form onSubmit={handleRegister} className="card-body">
+            <form onSubmit={handleRegister} className="md:card-body">
               <div className="form-control">
                 <label className="label">
                   <span className="label-text text-base font-semibold">User Name</span>
@@ -130,27 +130,28 @@ const SignUp = () => {
               </div>
 
               <div className="form-control relative">
-                <label className="label">
-                  <span className="label-text text-base font-semibold">Password</span>
-                </label>
-                <input
-                  type={passwordVisible ? "text" : "password"} 
-                  placeholder="password"
-                  className="input input-bordered"
-                  name="password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  required
-                />
-                {/* Eye icon for password visibility */}
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-3 top-2/3 transform -translate-y-1/2"
-                >
-                  {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
+    <label className="label">
+        <span className="label-text text-base font-semibold">Password</span>
+    </label>
+    <input
+        type={passwordVisible ? "text" : "password"} 
+        placeholder="password"
+        className="input input-bordered"
+        name="password"
+        value={password}
+        onChange={handlePasswordChange}
+        required
+    />
+    {/* Eye icon for password visibility */}
+    <button
+        type="button"
+        onClick={togglePasswordVisibility}
+        className="absolute right-3 top-2/3 transform -translate-y-1/2"
+    >
+        {passwordVisible ? <FaEye /> : <FaEyeSlash />}
+    </button>
+</div>
+
 
               {/* Password Requirements */}
               <div className="password-requirements mt-2">

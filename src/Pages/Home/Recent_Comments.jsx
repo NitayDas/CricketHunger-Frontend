@@ -21,7 +21,7 @@ const Recent_Comments = () => {
 
     return (
        <div className='w-full'>
-        <h3 className="text-2xl font-semibold text-center text-white shadow-lg border bg-orange-400 rounded-md">Recent Comments</h3>
+        <h3 className="text-xl font-semibold text-center text-white shadow-lg border  bg-orange-400 px-6 py-2  rounded-md md:text-2xl lg:text-2xl">Recent Comments</h3>
         <div className="h-96 overflow-y-scroll border bg-gray-100 rounded-md p-4">
             {comments.slice(0, 10).map((comment) => (
             <CommentItemSimple key={comment.id} comment={comment} />

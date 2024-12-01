@@ -10,6 +10,7 @@ const SignIn = () => {
     const navigate = useNavigate();  
     const { signIn } = useContext(AuthContext);  
     const [passwordVisible, setPasswordVisible] = useState(false); 
+    const [password, setPassword] = useState(""); // State for password
     const from = location.state?.from?.pathname || "/";
     console.log('state in the location login page', location.state)
 
@@ -18,7 +19,7 @@ const SignIn = () => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
-        const password = form.password.value;
+        
         console.log(email, password);
         
         signIn(email, password)
@@ -40,6 +41,11 @@ const SignIn = () => {
               });
     };
 
+    // Handle password change
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+    };
+
     // Toggle password visibility
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -47,20 +53,20 @@ const SignIn = () => {
 
     return (
         <div>
-            <div className="w-full text-center mt-12">
+            <div className="w-full text-center mt-6 md:mt-8 lg:mt-12">
                 <div className="text-center lg:text-left ">
                     {/* <h1 className="text-2xl font-bold text-center text-white lg:text-4xl py-5 mb-5">Sign In</h1> */}
                 </div>
                 <div className="flex justify-center items-center w-full">
                     <div className="card flex-shrink-0 bg-white drop-shadow-2xl rounded-xl shadow-2xl">
-                        <form onSubmit={handleLogin} className="card-body">
+                        <form onSubmit={handleLogin} className="md:card-body lg:card-body">
                             <div className="form-control">
                                 <label className="label">
                                     <span className="label-text text-base font-semibold">Email</span>
                                 </label>
                                 <input type="email" placeholder="email" name="email" className="input input-bordered" required />
                             </div>
-                            <div className="form-control relative"> 
+                            <div className="form-control relative">
                                 <label className="label">
                                     <span className="label-text text-base font-semibold">Password</span>
                                 </label>
@@ -69,15 +75,17 @@ const SignIn = () => {
                                     placeholder="password"
                                     className="input input-bordered"
                                     name="password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
                                     required
                                 />
-                              
+                                {/* Eye icon for password visibility */}
                                 <button
                                     type="button"
                                     onClick={togglePasswordVisibility}
                                     className="absolute right-3 top-2/3 transform -translate-y-1/2"
                                 >
-                                    {passwordVisible ? <FaEyeSlash className="text-lg" /> : <FaEye />} 
+                                    {passwordVisible ? <FaEye /> : <FaEyeSlash />}
                                 </button>
                             </div>
                             <div className="form-control mt-6">
