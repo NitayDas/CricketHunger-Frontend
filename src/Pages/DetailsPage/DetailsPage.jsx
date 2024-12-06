@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import "./details.css";
 import CommentsSection from "./CommentSection";
 import ScoreboardItem from './ScoreboardItem';
+import Striker from './Striker';
 
 const DetailsPage = () => {
     const { match_id } = useParams();
@@ -137,7 +138,7 @@ const DetailsPage = () => {
     
     return (
         <div className='mt-8 lg:mt-24 lg:px-12 '>
-            <div className='w-full flex justify-center lg:mt-24 lg:px-12'>
+            <div className='w-full flex justify-left lg:mt-24 lg:px-12'>
                 <div className='card w-60 bg-white shadow-lg border-2 h-auto rounded-lg md:w-72 lg:w-72'>
                     <div className="space-y-2 p-2">
                         <div className="flex mb-3">
@@ -156,8 +157,14 @@ const DetailsPage = () => {
                 </div>
             </div>
 
+            <div className='justify-left mt-2 lg:px-12'>
+                <Striker match_id={match_id} />
+            </div>
+
+            
+
             {/* Search OverSummary by ID */}
-            <div className="mt-8 mb-4 lg:mt-24  ">
+            <div className="mt-8 mb-4 lg:mt-24 ml-8 ">
                 <input
                     type="text"
                     value={searchOver}
