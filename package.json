@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.59.16",
     "axios": "^1.7.7",
+    "emailjs-com": "^3.2.0",
     "firebase": "^10.14.1",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",

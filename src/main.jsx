@@ -20,6 +20,8 @@ import Matches from './Pages/Matches/Matches.jsx';
 import Series from './Pages/Series/Series.jsx';
 import SeriesMatches from './Pages/Series/SeriesMatches.jsx';
 import NewsDetails from './Components/NewsSection/NewsDetails.jsx';
+import Contact from './Pages/Contact/Contact.jsx';
+import About from './Pages/About/About.jsx';
 
 
 
@@ -73,7 +75,17 @@ const router = createBrowserRouter([
           path: "/news/:id",
           element: <NewsDetails></NewsDetails>,
         },
+
+        
+        {
+          path: "/contact",
+          element: <Contact></Contact>,
+        },
       
+        {
+          path: "/about",
+          element: <About></About>,
+        },
     ],
   },
 ]);

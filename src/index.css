@@ -15,3 +15,8 @@
  .grad-button{
   background: linear-gradient(#06b6d4, #6ee7b7);
  }
+
+ .dropdown-content {
+  position: absolute !important;
+  z-index: 9999 !important;
+}

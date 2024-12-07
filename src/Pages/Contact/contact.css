@@ -1,0 +1,26 @@
+.gard-bg {
+    background: linear-gradient(#06b6d4, #6ee7b7);
+    border: none;
+    color: white;
+   
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s ease; 
+}
+
+.gard-bg:hover {
+  opacity: 0.6;
+}
+
+.contact-page-container {
+  overflow: hidden; /* Change to overflow: visible if needed */
+}
+.contact-page-container {
+  position: relative;
+}
+
+.form-container {
+  z-index: 10; /* Ensure this is above other content */
+  position: relative; /* Make sure the form is positioned */
+}
