@@ -164,7 +164,7 @@ const DetailsPage = () => {
             
 
             {/* Search OverSummary by ID */}
-            <div className="mt-8 mb-4 lg:mt-24 ml-8 ">
+            <div className="mt-8 mb-4 lg:mt-12 ml-8 ">
                 <input
                     type="text"
                     value={searchOver}
@@ -204,7 +204,7 @@ const DetailsPage = () => {
             )}
 
 
-            <div className="details-container mt-6">
+            <div className="details-container mt-2">
             {/* Comments Section */}
             <div className="comments-section drop-shadow-2xl ">
               <CommentsSection
