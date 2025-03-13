@@ -79,11 +79,11 @@ const Navbar = () => {
           Crickie Hunger
         </a>
       </div>
-      <div className="navbar-center hidden lg:flex">
+      {/* <div className="navbar-center hidden lg:flex">
         <ul className="menu font-semibold text-lg menu-horizontal px-1">{navOptions}</ul>
-      </div>
+      </div> */}
       <div className="navbar-end">
-        <ul className="hidden font-semibold lg:flex menu-horizontal px-1 gap-3">
+        <ul className="hidden text-lg font-semibold lg:flex menu-horizontal px-1 gap-6">
           {navOptions}
         </ul>
         <ul>
