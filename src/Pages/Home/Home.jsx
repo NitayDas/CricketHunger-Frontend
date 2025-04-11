@@ -35,16 +35,32 @@ const Home = () => {
     let filtercards=filterMatches(cards);
 
     return (
-    <div className='mt-5 px-3 lg:px-10 '>
-        <div className="carousel carousel-center  rounded-box container mx-3 lg:mx-5">
-            {filtercards.map(card => (
-                <div className="carousel-item" key={card.id}>
-                    <Card card={card} />
-                </div>
-            ))}
-        </div>
+    <div className='mt-5   '>
+<div
+  className="w-11/12 mx-auto overflow-x-auto"
+  style={{
+    scrollbarWidth: 'none',        
+    msOverflowStyle: 'none',        
+    WebkitOverflowScrolling: 'touch'   
+  }}
+>
+  <div
+    className="flex gap-2 pr-8"
+    style={{
+      minWidth: 'max-content'
+    }}
+  >
+    {filtercards.map(card => (
+      <div key={card.id} className="flex-shrink-0">
+        <Card card={card} />
+      </div>
+    ))}
+  </div>
+</div>
 
-        <div className="flex justify-center items-center mx-auto  lg:w-10/12 ">
+
+
+        <div className="flex justify-center items-center mx-auto  lg:w-11/12 ">
         <div className="w-full mt-12  grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-6  lg:grid-cols-2 lg:gap-10  ">
             {/* Top Comments Section */}
             <div className="w-full ">
@@ -61,7 +77,7 @@ const Home = () => {
 
          {/* home news section */}
 
-         <div className="new-div text-white p-4 mb-4 mt-10 rounded-lg">
+         <div className="new-div text-white  mb-4 mt-10 rounded-lg  ">
             <NewsSection></NewsSection>
         </div>
      

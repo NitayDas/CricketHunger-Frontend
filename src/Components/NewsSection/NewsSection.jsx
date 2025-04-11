@@ -22,31 +22,35 @@ const NewsSection = () => {
     }, []);
 
     return (
-        <div className="mx-auto mt-12 bg-white rounded-2xl lg:w-10/12">
-            <h2 className='text-2xl font-semibold lg:px-10 lg:pt-8 text-black'>Recent News</h2>
+        <div className=" mx-auto  lg:w-11/12 mt-12 bg-white rounded-2xl p-6 ">
+        <h2 className="text-2xl font-semibold text-black mb-4">Recent News</h2>
+        <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             {newsData.map((news) => {
                 const date = new Date(news.pub_time);
                 const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-
+    
                 return (
-                    <div key={news.id} className="flex">
-                        <div className="news-item  flex rounded-lg m-2 lg:gap-14 lg:justify-between lg:px-8 lg:py-2">
-                            {/* <img src={news.image} alt={news.headline} className="rounded-lg lg:h-48 lg:w-72" /> */}
-                            <div>
-                                <Link to={`/news/${news.id}`}>
-                                <h2 className="text-lg font-bold my-2 text-black">{news.headline}</h2>
-                                <p className="text-gray-700 text-lg">{news.intro}</p>
-                                </Link>
-                                <div className='flex gap-4 '>
-                                    <p className="text-gray-500 text-sm my-1">{formattedDate}</p>
-                                    <li className="text-gray-500 text-sm my-1">{news.source}</li>
-                                </div>
+                    <div key={news.id} className="flex items-start gap-4 bg-gray-50 p-3 rounded-lg shadow-sm hover:shadow-md transition">
+                        {/* Optional Image */}
+                        {/* <img src={news.image} alt="thumb" className="w-20 h-20 object-cover rounded-md" /> */}
+                        
+                        <div className="flex-1">
+                            <Link to={`/news/${news.story_id}`}>
+                                <h2 className="text-md font-bold text-black mb-1 line-clamp-2">{news.headline}</h2>
+                                <p className="text-gray-700 text-sm line-clamp-2">{news.intro}</p>
+                            </Link>
+                            <div className="flex text-xs text-gray-500 justify-between mt-1">
+                                <span>{formattedDate}</span>
+                                <span>{news.source}</span>
                             </div>
                         </div>
                     </div>
                 );
             })}
         </div>
+    </div>
+    
+    
     );
 };
 
