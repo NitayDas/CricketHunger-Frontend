@@ -38,6 +38,9 @@ const Navbar = () => {
       <li onClick={handleLinkClick}>
         <Link to="/about">About</Link>
       </li>
+      <li onClick={handleLinkClick}>
+        <Link to="/report">Report</Link>
+      </li>
     </>
   );
 
