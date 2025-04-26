@@ -23,6 +23,8 @@ import NewsDetails from './Components/NewsSection/NewsDetails.jsx';
 import Contact from './Pages/Contact/Contact.jsx';
 import About from './Pages/About/About.jsx';
 import Report from './Pages/Report.jsx';
+import Profile from './Pages/Profile.jsx';
+import PrivateRoute from './PrivateRoute.jsx';
 
 
 
@@ -86,6 +88,11 @@ const router = createBrowserRouter([
         {
           path: "/about",
           element: <About></About>,
+        },
+
+        {
+          path: "/profile",
+          element: <PrivateRoute><Profile></Profile></PrivateRoute>,
         },
 
         {

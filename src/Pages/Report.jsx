@@ -15,13 +15,14 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const Report = () => {
   const [reportData, setReportData] = useState({
-    teams: [
-      { name: 'Bangladesh', good: 120, bad: 15 },
-      { name: 'India', good: 200, bad: 25 },
-      { name: 'Australia', good: 180, bad: 20 },
-      { name: 'England', good: 150, bad: 18 },
-      { name: 'Pakistan', good: 170, bad: 22 },
-    ],
+    teams: [],
+    summary: {
+      totalComments: 0,
+      goodComments: 0,
+      badComments: 0,
+      goodPercentage: 0,
+      badPercentage: 0
+    },
     matchTypes: {
       international: [
         { type: 'T20', good: 150, bad: 10 },
@@ -36,11 +37,37 @@ const Report = () => {
       league: [
         { type: 'T20', good: 120, bad: 15 },
       ]
-    },
-    totalComments: 0,
-    goodComments: 0,
-    badComments: 0
+    }
   });
+
+  const calculatePercentage = (value, total) => total > 0 ? Math.round((value / total) * 100) : 0; 
+
+ useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/comment_sentiment_report/');
+        const apiData = await response.json();
+        
+        setReportData(prev => ({
+          ...prev,
+          summary: {
+            totalComments: apiData.total_comments,
+            goodComments: apiData.good_comments,
+            badComments: apiData.bad_comments,
+            goodPercentage: apiData.good_percentage,
+            badPercentage: apiData.bad_percentage
+          }
+        }));
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const [selectedCategory, setSelectedCategory] = useState('international');
   const colors = {
@@ -76,25 +103,8 @@ const Report = () => {
     }));
   }, []);
 
-  const calculatePercentage = (value, total) => total > 0 ? Math.round((value / total) * 100) : 0;
 
-  const teamChartData = {
-    labels: reportData.teams.map(team => team.name),
-    datasets: [
-      {
-        label: 'Good Comments',
-        data: reportData.teams.map(team => team.good),
-        backgroundColor: colors.good[1],
-        borderRadius: 6,
-      },
-      {
-        label: 'Bad Comments',
-        data: reportData.teams.map(team => team.bad),
-        backgroundColor: colors.bad[1],
-        borderRadius: 6,
-      },
-    ],
-  };
+
 
   const currentMatchTypes = reportData.matchTypes[selectedCategory] || [];
 
@@ -116,6 +126,73 @@ const Report = () => {
     ],
   };
 
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/team_comment_stats/');
+        const teamData = await response.json();
+        
+        // Transform the API data to match our structure
+        const transformedTeams = teamData.map(team => ({
+          name: team.team_name,
+          good: team.good_comments,
+          bad: team.bad_comments
+        }));
+
+        // Calculate totals based on all data
+        const allMatches = [
+          ...reportData.matchTypes.international,
+          ...reportData.matchTypes.domestic,
+          ...reportData.matchTypes.league
+        ];
+        
+        const teamComments = transformedTeams.reduce((acc, team) => {
+          acc.good += team.good;
+          acc.bad += team.bad;
+          return acc;
+        }, { good: 0, bad: 0 });
+
+        const goodComments = allMatches.reduce((sum, match) => sum + match.good, 0) + teamComments.good;
+        const badComments = allMatches.reduce((sum, match) => sum + match.bad, 0) + teamComments.bad;
+        
+        setReportData(prev => ({
+          ...prev,
+          teams: transformedTeams,
+          totalComments: goodComments + badComments,
+          goodComments,
+          badComments
+        }));
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching team data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchTeamData();
+  }, []);
+
+ 
+
+  const teamChartData = {
+    labels: reportData.teams.map(team => team.name),
+    datasets: [
+      {
+        label: 'Good Comments',
+        data: reportData.teams.map(team => team.good),
+        backgroundColor: colors.good[1],
+        borderRadius: 6,
+      },
+      {
+        label: 'Bad Comments',
+        data: reportData.teams.map(team => team.bad),
+        backgroundColor: colors.bad[1],
+        borderRadius: 6,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen mt-6 rounded-2xl p-6 lg:p-12 mx-auto lg:w-11/12" style={{ backgroundColor: colors.background }}>
       <div className="mx-auto">
@@ -123,11 +200,12 @@ const Report = () => {
         <p className="text-gray-600 mb-8">Analysis of user comments by team and match type</p>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Summary Cards - Now using direct API data */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {[
             {
               title: 'Total Comments',
-              value: reportData.totalComments,
+              value: reportData.summary.totalComments,
               color: 'blue',
               icon: (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -135,7 +213,7 @@ const Report = () => {
             },
             {
               title: 'Positive Comments',
-              value: `${reportData.goodComments} (${calculatePercentage(reportData.goodComments, reportData.totalComments)}%)`,
+              value: `${reportData.summary.goodComments} (${reportData.summary.goodPercentage}%)`,
               color: 'green',
               icon: (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
@@ -143,7 +221,7 @@ const Report = () => {
             },
             {
               title: 'Negative Comments',
-              value: `${reportData.badComments} (${calculatePercentage(reportData.badComments, reportData.totalComments)}%)`,
+              value: `${reportData.summary.badComments} (${reportData.summary.badPercentage}%)`,
               color: 'red',
               icon: (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
@@ -166,8 +244,9 @@ const Report = () => {
           ))}
         </div>
 
+
         {/* Team-wise Analysis */}
-        <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
+         <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-medium text-gray-800">Team Performance Analysis</h2>
             <div className="flex space-x-4">
@@ -181,34 +260,40 @@ const Report = () => {
               </div>
             </div>
           </div>
-          <div className="h-96">
-            <Bar
-              data={teamChartData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  tooltip: {
-                    callbacks: {
-                      afterLabel: function (context) {
-                        const total = reportData.teams[context.dataIndex].good + reportData.teams[context.dataIndex].bad;
-                        if (total > 0) {
-                          const percentage = Math.round((context.raw / total) * 100);
-                          return `Percentage: ${percentage}%`;
+          {reportData.teams.length > 0 ? (
+            <div className="h-96">
+              <Bar
+                data={teamChartData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    tooltip: {
+                      callbacks: {
+                        afterLabel: function (context) {
+                          const total = reportData.teams[context.dataIndex].good + reportData.teams[context.dataIndex].bad;
+                          if (total > 0) {
+                            const percentage = Math.round((context.raw / total) * 100);
+                            return `Percentage: ${percentage}%`;
+                          }
+                          return '';
                         }
-                        return '';
                       }
-                    }
+                    },
+                    legend: { display: false }
                   },
-                  legend: { display: false }
-                },
-                scales: {
-                  x: { grid: { display: false } },
-                  y: { beginAtZero: true, grid: { color: '#e5e7eb' } }
-                }
-              }}
-            />
-          </div>
+                  scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, grid: { color: '#e5e7eb' } }
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div className="h-96 flex items-center justify-center">
+              <p className="text-gray-500">No team data available</p>
+            </div>
+          )}
         </div>
 
         {/* Match Type Analysis */}
