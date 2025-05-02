@@ -22,10 +22,12 @@ const Profile = () => {
         minLength: false,
     });
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handlePasswordChange = (e) => {
         const value = e.target.value;
         setNewPassword(value);
+        setError('');
 
         setValidations({
             hasCapital: /[A-Z]/.test(value),
@@ -34,6 +36,7 @@ const Profile = () => {
             minLength: value.length >= 6,
         });
     };
+    console.log(user);
 
     const togglePasswordVisibility = (field) => {
         setPasswordVisible(prev => ({
@@ -46,20 +49,27 @@ const Profile = () => {
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
+        setError('');
+    };
+
+    const closeModal = () => {
+        resetForm();
+        document.getElementById('password_modal').close();
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError('');
     
         if (newPassword !== confirmPassword) {
-            toast.error("New passwords don't match");
+            setError("New passwords don't match");
             setLoading(false);
             return;
         }
     
         if (!Object.values(validations).every(Boolean)) {
-            toast.error("Please ensure the password meets all requirements");
+            setError("Please ensure the password meets all requirements");
             setLoading(false);
             return;
         }
@@ -72,22 +82,21 @@ const Profile = () => {
             await reauthenticateWithCredential(user, credential);
             await updatePassword(user, newPassword);
     
-            toast.success("Password updated successfully!"); // ✅ Success toast
-            closeModal(); // ✅ Modal close kore, form reset o kore
+            toast.success("Password updated successfully!");
+            closeModal();
         } catch (error) {
             console.error(error);
-            if (error.code === 'auth/wrong-password') {
-                toast.error("Current password is incorrect");
+            if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                setError("Current password is incorrect");
             } else if (error.code === 'auth/weak-password') {
-                toast.error("Password is too weak");
+                setError("Password is too weak");
             } else {
-                toast.error(`Error: ${error.message}`);
+                setError(`Error: ${error.message}`);
             }
         } finally {
             setLoading(false);
         }
     };
-    
 
     return (
         <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -95,15 +104,15 @@ const Profile = () => {
                 <div className="p-8">
                     <div className="flex flex-col items-center">
                         {user?.photoURL ? (
-                            <img 
+                            <img
                                 className="h-32 w-32 rounded-full object-cover mb-4"
-                                src={user.photoURL} 
-                                alt="Profile" 
+                                src={user.photoURL}
+                                alt="Profile"
                             />
                         ) : (
                             <FaUserCircle className="h-32 w-32 text-gray-400 mb-4" />
                         )}
-                        
+
                         <div className="text-center w-full">
                             <h2 className="text-2xl font-bold text-gray-800 mb-2">
                                 {user?.displayName || 'No username set'}
@@ -111,29 +120,28 @@ const Profile = () => {
                             <p className="text-gray-600 mb-6">
                                 {user?.email}
                             </p>
-                            
+
                             <div className="grid grid-cols-1 gap-4 mb-8">
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <h3 className="font-medium text-gray-700">Account Created</h3>
                                     <p className="text-gray-500">
-                                        {user?.metadata?.creationTime && 
+                                        {user?.metadata?.creationTime &&
                                             new Date(user.metadata.creationTime).toLocaleDateString()
                                         }
                                     </p>
                                 </div>
-                                
+
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <h3 className="font-medium text-gray-700">Last Sign In</h3>
                                     <p className="text-gray-500">
-                                        {user?.metadata?.lastSignInTime && 
+                                        {user?.metadata?.lastSignInTime &&
                                             new Date(user.metadata.lastSignInTime).toLocaleString()
                                         }
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Change Password Button */}
-                            <button 
+                            <button
                                 className="btn btn-primary w-full flex items-center justify-center gap-2"
                                 onClick={() => document.getElementById('password_modal').showModal()}
                             >
@@ -144,10 +152,19 @@ const Profile = () => {
                 </div>
             </div>
 
-            {/* DaisyUI Modal */}
             <dialog id="password_modal" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box">
                     <h3 className="font-bold text-lg">Change Password</h3>
+                    
+                    {error && (
+                        <div className="alert alert-error mt-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{error}</span>
+                        </div>
+                    )}
+                    
                     <form onSubmit={handleSubmit}>
                         <div className="space-y-4 mt-4">
                             <div className="form-control">
@@ -155,8 +172,8 @@ const Profile = () => {
                                     <span className="label-text">Current Password</span>
                                 </label>
                                 <div className="relative">
-                                    <input 
-                                        type={passwordVisible.current ? "text" : "password"} 
+                                    <input
+                                        type={passwordVisible.current ? "text" : "password"}
                                         className="input input-bordered w-full"
                                         value={currentPassword}
                                         onChange={(e) => setCurrentPassword(e.target.value)}
@@ -177,8 +194,8 @@ const Profile = () => {
                                     <span className="label-text">New Password</span>
                                 </label>
                                 <div className="relative">
-                                    <input 
-                                        type={passwordVisible.new ? "text" : "password"} 
+                                    <input
+                                        type={passwordVisible.new ? "text" : "password"}
                                         className="input input-bordered w-full"
                                         value={newPassword}
                                         onChange={handlePasswordChange}
@@ -199,8 +216,8 @@ const Profile = () => {
                                     <span className="label-text">Confirm New Password</span>
                                 </label>
                                 <div className="relative">
-                                    <input 
-                                        type={passwordVisible.confirm ? "text" : "password"} 
+                                    <input
+                                        type={passwordVisible.confirm ? "text" : "password"}
                                         className="input input-bordered w-full"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -216,43 +233,42 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                            {/* Password Requirements */}
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="text-sm font-medium mb-2">Password Requirements:</h4>
                                 <div className="grid grid-cols-2 gap-2">
                                     <div className="flex items-center">
-                                        <input 
-                                            type="checkbox" 
-                                            className="checkbox checkbox-xs" 
-                                            checked={validations.minLength} 
-                                            readOnly 
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox checkbox-xs"
+                                            checked={validations.minLength}
+                                            readOnly
                                         />
                                         <span className="ml-2 text-sm">6+ characters</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <input 
-                                            type="checkbox" 
-                                            className="checkbox checkbox-xs" 
-                                            checked={validations.hasCapital} 
-                                            readOnly 
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox checkbox-xs"
+                                            checked={validations.hasCapital}
+                                            readOnly
                                         />
                                         <span className="ml-2 text-sm">Capital letter</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <input 
-                                            type="checkbox" 
-                                            className="checkbox checkbox-xs" 
-                                            checked={validations.hasSpecialChar} 
-                                            readOnly 
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox checkbox-xs"
+                                            checked={validations.hasSpecialChar}
+                                            readOnly
                                         />
                                         <span className="ml-2 text-sm">Special character</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <input 
-                                            type="checkbox" 
-                                            className="checkbox checkbox-xs" 
-                                            checked={validations.hasDigit} 
-                                            readOnly 
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox checkbox-xs"
+                                            checked={validations.hasDigit}
+                                            readOnly
                                         />
                                         <span className="ml-2 text-sm">Number</span>
                                     </div>
@@ -261,15 +277,20 @@ const Profile = () => {
                         </div>
 
                         <div className="modal-action">
-                            {/* This button will close the modal */}
-                            <button className="btn">Close</button>
-                            {/* This button will submit the form */}
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="btn btn-primary"
                                 disabled={loading}
                             >
                                 {loading ? 'Updating...' : 'Update Password'}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn"
+                                onClick={closeModal}
+                            >
+                                Close
                             </button>
                         </div>
                     </form>

@@ -59,7 +59,7 @@ const SignUp = () => {
       })
       .then(() => {
         toast.success('Registration Successful', {
-          autoClose: 3000,
+          autoClose: 2000,
           onClose: () => navigate(location?.state || '/signin', { replace: true }),
         });
       })
