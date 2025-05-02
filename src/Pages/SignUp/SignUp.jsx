@@ -14,7 +14,7 @@ const SignUp = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
 
   const [password, setPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false); 
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [validations, setValidations] = useState({
     hasCapital: false,
     hasSpecialChar: false,
@@ -22,8 +22,8 @@ const SignUp = () => {
     minLength: false,
   });
   const [username, setUsername] = useState(''); // State for username
-  const [usernameError, setUsernameError] = useState(''); 
-  const [formError, setFormError] = useState(''); 
+  const [usernameError, setUsernameError] = useState('');
+  const [formError, setFormError] = useState('');
 
   const handleUserNameChange = (e) => {
     const value = e.target.value;
@@ -49,7 +49,7 @@ const SignUp = () => {
       setFormError('Please ensure the password meets all the requirements.');
       return;
     } else {
-      setFormError(''); 
+      setFormError('');
     }
 
     // Proceed with registration
@@ -107,8 +107,8 @@ const SignUp = () => {
                   placeholder="userName"
                   name="userName"
                   className="input input-bordered"
-                  value={username} 
-                  onChange={handleUserNameChange} 
+                  value={username}
+                  onChange={handleUserNameChange}
                   required
                 />
                 {usernameError && (
@@ -130,27 +130,27 @@ const SignUp = () => {
               </div>
 
               <div className="form-control relative">
-    <label className="label">
-        <span className="label-text text-base font-semibold">Password</span>
-    </label>
-    <input
-        type={passwordVisible ? "text" : "password"} 
-        placeholder="password"
-        className="input input-bordered"
-        name="password"
-        value={password}
-        onChange={handlePasswordChange}
-        required
-    />
-    {/* Eye icon for password visibility */}
-    <button
-        type="button"
-        onClick={togglePasswordVisibility}
-        className="absolute right-3 top-2/3 transform -translate-y-1/2"
-    >
-        {passwordVisible ? <FaEye /> : <FaEyeSlash />}
-    </button>
-</div>
+                <label className="label">
+                  <span className="label-text text-base font-semibold">Password</span>
+                </label>
+                <input
+                  type={passwordVisible ? "text" : "password"}
+                  placeholder="password"
+                  className="input input-bordered"
+                  name="password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  required
+                />
+                {/* Eye icon for password visibility */}
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-2/3 transform -translate-y-1/2"
+                >
+                  {passwordVisible ? <FaEye /> : <FaEyeSlash />}
+                </button>
+              </div>
 
 
               {/* Password Requirements */}
@@ -175,7 +175,7 @@ const SignUp = () => {
               </div>
 
               {formError && (
-                <p className="text-red-500 text-sm mt-2">{formError}</p> 
+                <p className="text-red-500 text-sm mt-2">{formError}</p>
               )}
 
               <div className="form-control mt-4">

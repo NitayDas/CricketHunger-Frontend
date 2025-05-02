@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import { app } from "../firebase/firebase.config";
+import { updatePassword } from "firebase/auth";
 
 export const AuthContext = createContext(null);
 
@@ -10,6 +11,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const googleProvider = new GoogleAuthProvider();
+
 
     const createUser = (email, password) => {
         setLoading(true);
@@ -48,6 +50,15 @@ const AuthProvider = ({ children }) => {
         };
     }, []);
 
+    // AuthProvider-er moddhe add korba:
+const updateUserPassword = (newPassword) => {
+    if (auth.currentUser) {
+        return updatePassword(auth.currentUser, newPassword);
+    } else {
+        return Promise.reject(new Error("No user is currently signed in."));
+    }
+};
+
     const authInfo = {
         user,
         loading,
@@ -56,6 +67,7 @@ const AuthProvider = ({ children }) => {
         googleSignIn,
         logOut,
         updateUserProfile,
+        updateUserPassword,
     };
 
     return (

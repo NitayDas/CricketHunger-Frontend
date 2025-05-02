@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../../Provider/AuthProvider';
 import './navbar.css';
+import { FaUserCircle } from 'react-icons/fa'; // Import user icon
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
   const handleLogOut = () => {
     logOut()
@@ -17,8 +19,13 @@ const Navbar = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
+  const handleUserDropdownToggle = () => {
+    setIsUserDropdownOpen((prev) => !prev);
+  };
+
   const handleLinkClick = () => {
-    setIsDropdownOpen(false); // Close the dropdown
+    setIsDropdownOpen(false); // Close the mobile dropdown
+    setIsUserDropdownOpen(false); // Close the user dropdown
   };
 
   const navOptions = (
@@ -37,6 +44,9 @@ const Navbar = () => {
       </li>
       <li onClick={handleLinkClick}>
         <Link to="/about">About</Link>
+      </li>
+      <li onClick={handleLinkClick}>
+        <Link to="/report">Report</Link>
       </li>
     </>
   );
@@ -79,30 +89,34 @@ const Navbar = () => {
           Crickie Hunger
         </a>
       </div>
-      {/* <div className="navbar-center hidden lg:flex">
-        <ul className="menu font-semibold text-lg menu-horizontal px-1">{navOptions}</ul>
-      </div> */}
       <div className="navbar-end">
         <ul className="hidden text-lg font-semibold lg:flex menu-horizontal px-1 gap-6">
           {navOptions}
         </ul>
-        <ul>
-          {user ? (
-            <>
-              <button onClick={handleLogOut} className="h-10 btn gard-bg ml-3">
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <>
-              <li>
-                <Link to="/signin">
-                  <button className="h-10 btn gard-bg ml-3">Sign In</button>
-                </Link>
+        <div className="">
+        {user ? (
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="btn ml-2 btn-ghost btn-circle">
+              <FaUserCircle className="text-3xl text-gray-600" />
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 p-2 shadow w-52"
+            >
+              <li className='text-lg font-semibold'>
+                <Link className='text-md' to="/profile">Profile</Link>
               </li>
-            </>
-          )}
-        </ul>
+              <li className='text-lg font-semibold'>
+                <button className='text-md' onClick={handleLogOut}>Logout</button>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <Link to="/signin">
+            <button className="h-10 btn gard-bg">Sign In</button>
+          </Link>
+        )}
+      </div>
       </div>
     </div>
   );
