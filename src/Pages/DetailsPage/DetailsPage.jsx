@@ -26,10 +26,8 @@ const DetailsPage = () => {
     const [searchOver, setSearchOver] = useState("");
     const [selectedOver, setSelectedOver] = useState(null);
     const sliderRef = useRef(null);
-    const firstVisitRef = useRef(true);
 
     
-
     
     useEffect(() => {
         let timeoutId;
