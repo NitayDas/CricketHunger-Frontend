@@ -26,10 +26,13 @@ const DetailsPage = () => {
     const [searchOver, setSearchOver] = useState("");
     const [selectedOver, setSelectedOver] = useState(null);
     const sliderRef = useRef(null);
+    const firstVisitRef = useRef(true);
+
     
 
     
     useEffect(() => {
+        let timeoutId;
         const fetchMatchData = async () => {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/matchDetails/${match_id}/`,{innings_id : InningsId});
@@ -54,7 +57,6 @@ const DetailsPage = () => {
                 }, {});
                 
                 setOverSummary(groupedSummary);
-
                 setScoreboard1(scoreboard.filter((item) => item.inningsId === "1"));
                 setScoreboard2(scoreboard.filter((item) => item.inningsId === "2"));
                 setScoreboard3(scoreboard.filter((item) => item.inningsId === "3"));
@@ -63,10 +65,34 @@ const DetailsPage = () => {
                 setError("There was an error fetching the scoreboard and over summary!");
                 console.error("There was an error fetching the scoreboard and over summary!", error);
             }
+
+            // Schedule the next fetch after 15 seconds
+            timeoutId = setTimeout(fetchMatchData, 10000);
         };
 
         fetchMatchData();
+        // return () => {
+        //     localStorage.removeItem("persistedOverNum");
+        // };
+
+        // Clean up
+        return () => clearTimeout(timeoutId);
+
     }, [match_id,InningsId]);
+
+
+
+    // useEffect(() => {
+    //     const handleUnload = () => {
+    //         localStorage.setItem("persistedOverNum", null);
+    //     };
+    
+    //     window.addEventListener("beforeunload", handleUnload);
+    //     return () => {
+    //         window.removeEventListener("beforeunload", handleUnload);
+    //         handleUnload(); // Also run on route change or component unmount
+    //     };
+    // }, []);
 
     if (error) {
         return <div>{error}</div>;
@@ -80,8 +106,15 @@ const DetailsPage = () => {
     ? Math.max(...Object.keys(overSummary).map(Number)) 
     : "0";
    
-    const overnum = over_num ? over_num : latestOverNum;
-    console.log(overnum)
+    const storedOverNum = localStorage.getItem("persistedOverNum");
+    console.log("storedOverNum",storedOverNum);
+    console.log("latestOverNum",latestOverNum);
+    const overnum = (storedOverNum && storedOverNum !== "null")
+    ? storedOverNum
+    : latestOverNum;
+
+    localStorage.setItem("persistedOverNum", overnum);
+    
 
     const OverIndex =  Object.keys(overSummary).indexOf(overnum.toString());
 
@@ -109,6 +142,7 @@ const DetailsPage = () => {
 
         if (searchOver && overSummary[searchOver]) {
             setSelectedOver(searchOver);
+            localStorage.setItem("persistedOverNum", searchOver);
         } 
 
         setSearchOver("");
@@ -123,16 +157,18 @@ const DetailsPage = () => {
         slidesToShow: slidesToShow,
         slidesToScroll: 6,
         //initialSlide : 400,
-        afterChange: (index) => {
-            const overNums = Object.keys(overSummary);
-            const selectedIdx = Math.min(index, overNums.length - 1);
-            setSelectedOver(overNums[selectedIdx]);
-        }
+        // afterChange: (index) => {
+        //     const overNums = Object.keys(overSummary);
+        //     const selectedIdx = Math.min(index, overNums.length - 1);
+        //     setSelectedOver(overNums[selectedIdx]);
+        //     // localStorage.setItem("persistedOverNum", overNums[selectedIdx]);
+        // }
     };
 
 
     const handleOverClick = (overNum) => {
         setSelectedOver(overNum);
+        localStorage.setItem("persistedOverNum", overNum);
     };
 
     

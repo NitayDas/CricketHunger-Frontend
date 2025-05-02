@@ -1,5 +1,113 @@
+// import { useState, useContext, useRef, useEffect } from "react";
+// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import axios from "axios";
+// import { AuthContext } from "../../Provider/AuthProvider";
+// import { FaReplyAll } from "react-icons/fa6";
+// import { AiFillLike } from "react-icons/ai";
+// import "./details.css";
+// import PropTypes from "prop-types";
+// import ReplySection from "./ReplySection";
+// import ReplyList from "./ReplyList";
+
+
+
+// // Fetch comments for a specific summary
+// const fetchComments = async (overSummaryId) => {
+//   const response = await axios.get(
+//     `http://127.0.0.1:8000/comments/${overSummaryId}/`
+//   );
+//   return response.data;
+// };
+
+// // Post a new comment
+// const postComment = async ({ overSummaryId, commentData }) => {
+//   const response = await axios.post(
+//     `http://127.0.0.1:8000/comments/${overSummaryId}/`,
+//     commentData
+//   );
+//   return response.data;
+// };
+
+// const CommentsSection = ({ overSummaryId }) => {
+//   const [comment, setComment] = useState("");
+//   const [replyingTo, setReplyingTo] = useState(null); // Track which comment is being replied to
+//   const queryClient = useQueryClient();
+//   const location = useLocation();
+//   const navigate = useNavigate();
+//   const scrollRef = useRef(null);
+
+//   // Access user and loading state from AuthContext
+//   const { user, loading } = useContext(AuthContext);
+
+//   // Fetch comments using react-query
+//   const {
+//     data: comments = [],
+//     isLoading,
+//     isError,
+//   } = useQuery({
+//     queryKey: ["comments", overSummaryId],
+//     queryFn: () => fetchComments(overSummaryId),
+//     enabled: !!overSummaryId,
+//     refetchOnWindowFocus: false,
+//   });
+
+//   // Mutation for posting a comment
+//   const mutation = useMutation({
+//     mutationFn: (commentData) => postComment({ overSummaryId, commentData }),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries(["comments", overSummaryId]);
+//     },
+//   });
+
+//   // Handle comment submission
+//   const handleCommentSubmit = (event) => {
+//     event.preventDefault();
+//     if (comment.trim() === "") return; // Prevent empty comments
+
+//     // Check if user is authenticated
+//     if (!user?.email) {
+//       // Redirect to sign-in page with current pathname
+//       navigate("/signin", { state: { from: location.pathname } });
+//       return;
+//     }
+
+//     // Prepare comment data
+//     const commentData = {
+//         user: {
+//           name: user?.displayName,
+//           email: user?.email,
+//       },
+//       content: comment,
+//       parent : null,
+//     };
+
+//     // Post the comment
+//     mutation.mutate(commentData);
+//     setComment(""); // Clear the comment input
+//   };
+
+//   // Scroll to the bottom of the comments when a new comment is added
+//   useEffect(() => {
+//     if (scrollRef.current) {
+//       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+//     }
+//   }, [comments]);
+
+//   if (loading) {
+//     return <progress className="progress text-6xl w-56"></progress>;
+//   }
+
+//   const handleSignInSubmission = () => {
+//     if (!user?.email) {
+//         // Redirect to login with state to return to this page after login
+//         navigate('/signin', { state: { from: location } });
+//     }
+// }
+
+
 import { useState, useContext, useRef, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../Provider/AuthProvider";
@@ -10,109 +118,94 @@ import PropTypes from "prop-types";
 import ReplySection from "./ReplySection";
 import ReplyList from "./ReplyList";
 
-
-
-// Fetch comments for a specific summary
-const fetchComments = async (overSummaryId) => {
-  const response = await axios.get(
-    `http://127.0.0.1:8000/comments/${overSummaryId}/`
-  );
-  return response.data;
-};
-
-// Post a new comment
-const postComment = async ({ overSummaryId, commentData }) => {
-  const response = await axios.post(
-    `http://127.0.0.1:8000/comments/${overSummaryId}/`,
-    commentData
-  );
-  return response.data;
-};
-
 const CommentsSection = ({ overSummaryId }) => {
   const [comment, setComment] = useState("");
-  const [replyingTo, setReplyingTo] = useState(null); // Track which comment is being replied to
-  const queryClient = useQueryClient();
+  const [comments, setComments] = useState([]);
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [error, setError] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
 
-  // Access user and loading state from AuthContext
   const { user, loading } = useContext(AuthContext);
 
-  // Fetch comments using react-query
-  const {
-    data: comments = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["comments", overSummaryId],
-    queryFn: () => fetchComments(overSummaryId),
-    enabled: !!overSummaryId,
-    refetchOnWindowFocus: false,
-  });
-
+  // Fetch comments manually and set up auto-refresh with setTimeout
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/comments/${overSummaryId}/`);
+        setComments(response.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch comments.");
+      }
+    };
+  
+    if (overSummaryId) {
+      fetchComments(); // Initial fetch
+      const intervalId = setInterval(fetchComments, 10000); // Fetch every 10s
+  
+      return () => clearInterval(intervalId); // Cleanup on unmount
+    }
+  }, [overSummaryId]);
+  
   // Mutation for posting a comment
   const mutation = useMutation({
-    mutationFn: (commentData) => postComment({ overSummaryId, commentData }),
+    mutationFn: (commentData) =>
+      axios.post(`http://127.0.0.1:8000/comments/${overSummaryId}/`, commentData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["comments", overSummaryId]);
+      axios
+        .get(`http://127.0.0.1:8000/comments/${overSummaryId}/`)
+        .then((res) => setComments(res.data))
+        .catch(() => setError("Failed to refresh comments after posting."));
     },
   });
 
   // Handle comment submission
   const handleCommentSubmit = (event) => {
     event.preventDefault();
-    if (comment.trim() === "") return; // Prevent empty comments
+    if (comment.trim() === "") return;
 
-    // Check if user is authenticated
     if (!user?.email) {
-      // Redirect to sign-in page with current pathname
       navigate("/signin", { state: { from: location.pathname } });
       return;
     }
 
-    // Prepare comment data
     const commentData = {
-        user: {
-          name: user?.displayName,
-          email: user?.email,
+      user: {
+        name: user?.displayName,
+        email: user?.email,
       },
       content: comment,
-      parent : null,
+      parent: null,
     };
 
-    
-
-    // Post the comment
     mutation.mutate(commentData);
-
-    setComment(""); // Clear the comment input
+    setComment("");
   };
 
-  // Scroll to the bottom of the comments when a new comment is added
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  // Auto-scroll to bottom on comment change
+  // useEffect(() => {
+  //   if (scrollRef.current) {
+  //     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  //   }
+  // }, [comments]);
+
+  const handleSignInSubmission = () => {
+    if (!user?.email) {
+      navigate("/signin", { state: { from: location } });
     }
-  }, [comments]);
+  };
 
   if (loading) {
     return <progress className="progress text-6xl w-56"></progress>;
   }
 
-  const handleSignInSubmission = () => {
-    if (!user?.email) {
-        // Redirect to login with state to return to this page after login
-        navigate('/signin', { state: { from: location } });
-    }
-}
-
 return (
   <div className="w-full flex flex-col p-4 bg-white rounded-2xl h-auto shadow-md md:flex-row md:gap-8 lg:flex-row">
     <div className="lg:w-1/2 p-4">
-      {isLoading && <p>Loading comments...</p>}
-      {isError && <p>Error loading comments!</p>}
+      {/* {isLoading && <p>Loading comments...</p>}
+      {isError && <p>Error loading comments!</p>} */}
 
       <p className="text-xl font-semibold underline pb-3 mb-3 md:text-2xl">Comments</p>
 
