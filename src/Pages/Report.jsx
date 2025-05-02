@@ -24,38 +24,88 @@ const Report = () => {
       badPercentage: 0
     },
     matchTypes: {
-      international: [
-        { type: 'T20', good: 150, bad: 10 },
-        { type: 'ODI', good: 200, bad: 30 },
-        { type: 'Test', good: 150, bad: 20 },
-      ],
-      domestic: [
-        { type: 'T20', good: 80, bad: 5 },
-        { type: 'ODI', good: 60, bad: 8 },
-        { type: 'Test', good: 40, bad: 6 },
-      ],
-      league: [
-        { type: 'T20', good: 120, bad: 15 },
-      ]
+      international: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } },
+      domestic: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } },
+      league: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } }
     }
   });
 
+  const [loading, setLoading] = useState(true);
+
   const calculatePercentage = (value, total) => total > 0 ? Math.round((value / total) * 100) : 0; 
 
- useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/comment_sentiment_report/');
-        const apiData = await response.json();
+        // Fetch sentiment report
+        const sentimentResponse = await fetch('http://127.0.0.1:8000/api/comment_sentiment_report/');
+        const sentimentData = await sentimentResponse.json();
         
+        // Fetch team data
+        const teamResponse = await fetch('http://127.0.0.1:8000/api/team_comment_stats/');
+        const teamData = await teamResponse.json();
+        
+        // Fetch match type data
+        const matchTypeResponse = await fetch('http://127.0.0.1:8000/api/MatchType_commentPercentage/');
+        const matchTypeData = await matchTypeResponse.json();
+        
+        // Transform team data
+        const transformedTeams = teamData.map(team => ({
+          name: team.team_name,
+          good: team.good_comments,
+          bad: team.bad_comments
+        }));
+
+        // Transform match type data
+        const transformedMatchTypes = {
+          international: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } },
+          domestic: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } },
+          league: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } }
+        };
+
+        matchTypeData.forEach(item => {
+          const matchType = item.match_type.toLowerCase();
+          if (transformedMatchTypes[matchType]) {
+            transformedMatchTypes[matchType].t20.good = item.t20_count || 0;
+            transformedMatchTypes[matchType].odi.good = item.one_day_count || 0;
+            transformedMatchTypes[matchType].test.good = item.test_count || 0;
+            // Assuming bad comments are not provided in this API, we'll set them to 0
+            transformedMatchTypes[matchType].t20.bad = 0;
+            transformedMatchTypes[matchType].odi.bad = 0;
+            transformedMatchTypes[matchType].test.bad = 0;
+          }
+        });
+
+        // Calculate totals
+        const teamComments = transformedTeams.reduce((acc, team) => {
+          acc.good += team.good;
+          acc.bad += team.bad;
+          return acc;
+        }, { good: 0, bad: 0 });
+
+        // Calculate match type comments
+        let matchTypeGood = 0;
+        let matchTypeBad = 0;
+        
+        Object.values(transformedMatchTypes).forEach(category => {
+          matchTypeGood += category.t20.good + category.odi.good + category.test.good;
+          matchTypeBad += category.t20.bad + category.odi.bad + category.test.bad;
+        });
+
+        const totalGood = teamComments.good + matchTypeGood;
+        const totalBad = teamComments.bad + matchTypeBad;
+        const totalComments = totalGood + totalBad;
+
         setReportData(prev => ({
           ...prev,
+          teams: transformedTeams,
+          matchTypes: transformedMatchTypes,
           summary: {
-            totalComments: apiData.total_comments,
-            goodComments: apiData.good_comments,
-            badComments: apiData.bad_comments,
-            goodPercentage: apiData.good_percentage,
-            badPercentage: apiData.bad_percentage
+            totalComments: sentimentData.total_comments || totalComments,
+            goodComments: sentimentData.good_comments || totalGood,
+            badComments: sentimentData.bad_comments || totalBad,
+            goodPercentage: sentimentData.good_percentage || calculatePercentage(totalGood, totalComments),
+            badPercentage: sentimentData.bad_percentage || calculatePercentage(totalBad, totalComments)
           }
         }));
         
@@ -78,35 +128,11 @@ const Report = () => {
     card: '#ffffff'
   };
 
-  useEffect(() => {
-    // Calculate totals based on all data
-    const allMatches = [
-      ...reportData.matchTypes.international,
-      ...reportData.matchTypes.domestic,
-      ...reportData.matchTypes.league
-    ];
-    
-    const teamComments = reportData.teams.reduce((acc, team) => {
-      acc.good += team.good;
-      acc.bad += team.bad;
-      return acc;
-    }, { good: 0, bad: 0 });
-
-    const goodComments = allMatches.reduce((sum, match) => sum + match.good, 0) + teamComments.good;
-    const badComments = allMatches.reduce((sum, match) => sum + match.bad, 0) + teamComments.bad;
-    
-    setReportData(prev => ({
-      ...prev,
-      totalComments: goodComments + badComments,
-      goodComments,
-      badComments
-    }));
-  }, []);
-
-
-
-
-  const currentMatchTypes = reportData.matchTypes[selectedCategory] || [];
+  const currentMatchTypes = [
+    { type: 'T20', good: reportData.matchTypes[selectedCategory].t20.good, bad: reportData.matchTypes[selectedCategory].t20.bad },
+    { type: 'ODI', good: reportData.matchTypes[selectedCategory].odi.good, bad: reportData.matchTypes[selectedCategory].odi.bad },
+    { type: 'Test', good: reportData.matchTypes[selectedCategory].test.good, bad: reportData.matchTypes[selectedCategory].test.bad }
+  ].filter(match => match.good > 0 || match.bad > 0); // Only show match types with data
 
   const matchTypeChartData = {
     labels: currentMatchTypes.map(match => `${match.type} (${calculatePercentage(match.good, match.good + match.bad)}% Good)`),
@@ -126,55 +152,6 @@ const Report = () => {
     ],
   };
 
-  useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/team_comment_stats/');
-        const teamData = await response.json();
-        
-        // Transform the API data to match our structure
-        const transformedTeams = teamData.map(team => ({
-          name: team.team_name,
-          good: team.good_comments,
-          bad: team.bad_comments
-        }));
-
-        // Calculate totals based on all data
-        const allMatches = [
-          ...reportData.matchTypes.international,
-          ...reportData.matchTypes.domestic,
-          ...reportData.matchTypes.league
-        ];
-        
-        const teamComments = transformedTeams.reduce((acc, team) => {
-          acc.good += team.good;
-          acc.bad += team.bad;
-          return acc;
-        }, { good: 0, bad: 0 });
-
-        const goodComments = allMatches.reduce((sum, match) => sum + match.good, 0) + teamComments.good;
-        const badComments = allMatches.reduce((sum, match) => sum + match.bad, 0) + teamComments.bad;
-        
-        setReportData(prev => ({
-          ...prev,
-          teams: transformedTeams,
-          totalComments: goodComments + badComments,
-          goodComments,
-          badComments
-        }));
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching team data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchTeamData();
-  }, []);
-
- 
-
   const teamChartData = {
     labels: reportData.teams.map(team => team.name),
     datasets: [
@@ -193,6 +170,17 @@ const Report = () => {
     ],
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.background }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen mt-6 rounded-2xl p-6 lg:p-12 mx-auto lg:w-11/12" style={{ backgroundColor: colors.background }}>
       <div className="mx-auto">
@@ -200,8 +188,7 @@ const Report = () => {
         <p className="text-gray-600 mb-8">Analysis of user comments by team and match type</p>
 
         {/* Summary Cards */}
-      {/* Summary Cards - Now using direct API data */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {[
             {
               title: 'Total Comments',
@@ -244,9 +231,8 @@ const Report = () => {
           ))}
         </div>
 
-
         {/* Team-wise Analysis */}
-         <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
+        <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-medium text-gray-800">Team Performance Analysis</h2>
             <div className="flex space-x-4">
@@ -321,70 +307,82 @@ const Report = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <h3 className="text-lg font-medium text-gray-700 mb-4">Match Type Distribution</h3>
-              <div className="h-80">
-                <Doughnut
-                  data={matchTypeChartData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                      legend: {
-                        position: 'right',
-                        labels: {
-                          usePointStyle: true,
-                          padding: 20,
-                          font: { size: 12 }
-                        }
-                      },
-                      tooltip: {
-                        callbacks: {
-                          label: function (context) {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = currentMatchTypes[context.dataIndex].good + currentMatchTypes[context.dataIndex].bad;
-                            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                            return `${label}: ${value} (${percentage}%)`;
+              {currentMatchTypes.length > 0 ? (
+                <div className="h-80">
+                  <Doughnut
+                    data={matchTypeChartData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      cutout: '70%',
+                      plugins: {
+                        legend: {
+                          position: 'right',
+                          labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { size: 12 }
+                          }
+                        },
+                        tooltip: {
+                          callbacks: {
+                            label: function (context) {
+                              const label = context.label || '';
+                              const value = context.raw || 0;
+                              const total = currentMatchTypes[context.dataIndex].good + currentMatchTypes[context.dataIndex].bad;
+                              const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                              return `${label}: ${value} (${percentage}%)`;
+                            }
                           }
                         }
                       }
-                    }
-                  }}
-                />
-              </div>
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-gray-500">No match type data available for this category</p>
+                </div>
+              )}
             </div>
 
             <div>
               <h3 className="text-lg font-medium text-gray-700 mb-4">Match Type Sentiment</h3>
-              <div className="space-y-6">
-                {currentMatchTypes.map((match) => {
-                  const total = match.good + match.bad;
-                  const goodPercentage = calculatePercentage(match.good, total);
-                  const badPercentage = calculatePercentage(match.bad, total);
+              {currentMatchTypes.length > 0 ? (
+                <div className="space-y-6">
+                  {currentMatchTypes.map((match) => {
+                    const total = match.good + match.bad;
+                    const goodPercentage = calculatePercentage(match.good, total);
+                    const badPercentage = calculatePercentage(match.bad, total);
 
-                  return (
-                    <div key={match.type} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">{match.type}</span>
-                        <span className="text-gray-500">{total} comments</span>
+                    return (
+                      <div key={match.type} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium">{match.type}</span>
+                          <span className="text-gray-500">{total} comments</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                          <div
+                            className="h-2.5 rounded-full"
+                            style={{
+                              width: `${goodPercentage}%`,
+                              background: `linear-gradient(90deg, ${colors.good[0]}, ${colors.good[2]})`
+                            }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>{goodPercentage}% Positive</span>
+                          <span>{badPercentage}% Negative</span>
+                        </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div
-                          className="h-2.5 rounded-full"
-                          style={{
-                            width: `${goodPercentage}%`,
-                            background: `linear-gradient(90deg, ${colors.good[0]}, ${colors.good[2]})`
-                          }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>{goodPercentage}% Positive</span>
-                        <span>{badPercentage}% Negative</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-gray-500">No match type data available for this category</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

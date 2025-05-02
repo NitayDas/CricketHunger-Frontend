@@ -95,22 +95,29 @@ const Navbar = () => {
         </ul>
         <div className="">
         {user ? (
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn ml-2 btn-ghost btn-circle">
-              <FaUserCircle className="text-3xl text-gray-600" />
-            </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 p-2 shadow w-52"
-            >
-              <li className='text-lg font-semibold'>
-                <Link className='text-md' to="/profile">Profile</Link>
-              </li>
-              <li className='text-lg font-semibold'>
-                <button className='text-md' onClick={handleLogOut}>Logout</button>
-              </li>
-            </ul>
+      <div className="dropdown dropdown-end">
+      <div tabIndex={0} role="button" className="btn ml-2 btn-ghost btn-circle avatar">
+        {user?.photoURL ? (
+          <div className="w-10 rounded-full">
+            <img src={user.photoURL} alt="User Profile" />
           </div>
+        ) : (
+          <FaUserCircle className="text-3xl text-gray-600" />
+        )}
+      </div>
+      <ul
+        tabIndex={0}
+        className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 p-2 shadow w-52"
+      >
+        <li className='text-lg font-semibold'>
+          <Link className='text-md' to="/profile">Profile</Link>
+        </li>
+        <li className='text-lg font-semibold'>
+          <button className='text-md' onClick={handleLogOut}>Logout</button>
+        </li>
+      </ul>
+    </div>
+    
         ) : (
           <Link to="/signin">
             <button className="h-10 btn gard-bg">Sign In</button>
