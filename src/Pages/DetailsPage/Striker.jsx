@@ -30,9 +30,9 @@ const Striker = ({match_id}) => {
         return <div className="text-red-500">{error}</div>;
       }
     
-      if (!strikerInfo.length) {
-        return <div className="text-center text-gray-500">Loading...</div>;
-      }
+      // if (!strikerInfo.length) {
+      //   return <div className="text-center text-gray-500">Loading...</div>;
+      // }
     
 
 

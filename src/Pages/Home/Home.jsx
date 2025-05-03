@@ -29,7 +29,7 @@ const Home = () => {
 
 
   const filterMatches = (matches) => {
-    return matches.filter(match => (match.match_type === 'International' || match.match_type === 'League') && match.state !== 'Upcoming');
+    return matches.filter(match => (match.match_type === 'International' || match.match_type === 'League') && match.state !== 'Recent');
   };
 
   let filtercards = filterMatches(cards);

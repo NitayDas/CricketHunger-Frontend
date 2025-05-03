@@ -24,9 +24,9 @@ const Report = () => {
       badPercentage: 0
     },
     matchTypes: {
-      international: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } },
-      domestic: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } },
-      league: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } }
+      international: { t20: {}, odi: {}, test: {} },
+      domestic: { t20: {}, odi: {}, test: {} },
+      league: { t20: {}, odi: {}, test: {} }
     }
   });
 
@@ -63,18 +63,16 @@ const Report = () => {
           league: { t20: { good: 0, bad: 0 }, odi: { good: 0, bad: 0 }, test: { good: 0, bad: 0 } }
         };
 
-        matchTypeData.forEach(item => {
-          const matchType = item.match_type.toLowerCase();
-          if (transformedMatchTypes[matchType]) {
-            transformedMatchTypes[matchType].t20.good = item.t20_count || 0;
-            transformedMatchTypes[matchType].odi.good = item.one_day_count || 0;
-            transformedMatchTypes[matchType].test.good = item.test_count || 0;
-            // Assuming bad comments are not provided in this API, we'll set them to 0
-            transformedMatchTypes[matchType].t20.bad = 0;
-            transformedMatchTypes[matchType].odi.bad = 0;
-            transformedMatchTypes[matchType].test.bad = 0;
-          }
-        });
+ // In your fetchData function, keep the transformation simple:
+matchTypeData.forEach(item => {
+  const matchType = item.match_type.toLowerCase();
+  if (transformedMatchTypes[matchType]) {
+    transformedMatchTypes[matchType].t20.good = item.t20_count || 0;
+    transformedMatchTypes[matchType].odi.good = item.one_day_count || 0;
+    transformedMatchTypes[matchType].test.good = item.test_count || 0;
+    // Since API doesn't provide bad counts, we'll leave them as 0
+  }
+});
 
         // Calculate totals
         const teamComments = transformedTeams.reduce((acc, team) => {
@@ -135,7 +133,7 @@ const Report = () => {
   ].filter(match => match.good > 0 || match.bad > 0); // Only show match types with data
 
   const matchTypeChartData = {
-    labels: currentMatchTypes.map(match => `${match.type} (${calculatePercentage(match.good, match.good + match.bad)}% Good)`),
+    labels: currentMatchTypes.map(match => `${match.type} `),
     datasets: [
       {
         data: currentMatchTypes.map(match => match.good),
@@ -328,10 +326,8 @@ const Report = () => {
                           callbacks: {
                             label: function (context) {
                               const label = context.label || '';
-                              const value = context.raw || 0;
-                              const total = currentMatchTypes[context.dataIndex].good + currentMatchTypes[context.dataIndex].bad;
-                              const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                              return `${label}: ${value} (${percentage}%)`;
+                             
+                              return `${label}`;
                             }
                           }
                         }
@@ -347,7 +343,7 @@ const Report = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-700 mb-4">Match Type Sentiment</h3>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Match Type Comment</h3>
               {currentMatchTypes.length > 0 ? (
                 <div className="space-y-6">
                   {currentMatchTypes.map((match) => {
@@ -370,10 +366,10 @@ const Report = () => {
                             }}
                           ></div>
                         </div>
-                        <div className="flex justify-between text-xs text-gray-500">
+                        {/* <div className="flex justify-between text-xs text-gray-500">
                           <span>{goodPercentage}% Positive</span>
                           <span>{badPercentage}% Negative</span>
-                        </div>
+                        </div> */}
                       </div>
                     );
                   })}

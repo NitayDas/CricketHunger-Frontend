@@ -28,7 +28,7 @@ const SignIn = () => {
                 console.log(user);
 
                 toast.success("Signed in successfully!", {
-                    autoClose: 3000, 
+                    autoClose: 1000, 
                     onClose: () => navigate(from, { replace: true }),
                 });
             })

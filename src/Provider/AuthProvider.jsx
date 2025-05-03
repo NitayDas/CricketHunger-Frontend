@@ -50,7 +50,7 @@ const AuthProvider = ({ children }) => {
         };
     }, []);
 
-    // AuthProvider-er moddhe add korba:
+    
 const updateUserPassword = (newPassword) => {
     if (auth.currentUser) {
         return updatePassword(auth.currentUser, newPassword);
